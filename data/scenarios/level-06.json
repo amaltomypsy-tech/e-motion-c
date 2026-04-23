@@ -1,0 +1,43 @@
+{
+  "levelId": "level-06",
+  "title": "Interview Nerves",
+  "branchPrimary": "Using Emotions to Facilitate Thinking",
+  "theme": "Performance preparation",
+  "culturalTags": ["job-search", "interview", "nervousness", "India-adaptable"],
+  "scene": {
+    "background": { "type": "gradient", "value": "linear-gradient(135deg, rgba(20,19,33,1) 0%, rgba(9,9,15,1) 65%, rgba(6,6,10,1) 100%)" },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "alert"
+  },
+  "narrative": {
+    "context": "You have an interview in two hours. You feel nervous but energized. Your thoughts jump between hope and fear.",
+    "prompt": "How do you use this emotional state to think more effectively?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Convert nervous energy into targeted rehearsal",
+      "description": "Use the alertness to identify 3 likely questions and rehearse structured answers (STAR format) for 20 minutes.",
+      "ei": { "effectivenessScore": 3, "effectivenessLevel": "high", "rationale": "Uses emotion as information to focus attention and organize thinking—emotion facilitates preparation." }
+    },
+    {
+      "optionId": "o2",
+      "label": "Do general reading to feel prepared",
+      "description": "Skim many topics to reduce uncertainty, without a clear plan.",
+      "ei": { "effectivenessScore": 2, "effectivenessLevel": "moderate", "rationale": "May reduce anxiety somewhat, but the emotion is not used strategically to guide priority thinking." }
+    },
+    {
+      "optionId": "o3",
+      "label": "Try to suppress the nervousness completely",
+      "description": "Tell yourself emotions are weakness and push through without acknowledging them.",
+      "ei": { "effectivenessScore": 1, "effectivenessLevel": "low", "rationale": "Suppression often narrows attention; misses the signal value of emotion for planning." }
+    },
+    {
+      "optionId": "o4",
+      "label": "Cancel preparation because it feels overwhelming",
+      "description": "Avoid thinking about it until it’s time to leave.",
+      "ei": { "effectivenessScore": 0, "effectivenessLevel": "very_low", "rationale": "Avoidance prevents emotion from supporting thinking; reduces readiness." }
+    }
+  ]
+}
+

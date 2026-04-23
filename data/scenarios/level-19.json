@@ -1,0 +1,43 @@
+{
+  "levelId": "level-19",
+  "title": "Friend’s Joke Crossed a Line",
+  "branchPrimary": "Understanding Emotions",
+  "theme": "Distinguishing hurt, anger, and shame",
+  "culturalTags": ["friends", "humor", "boundary", "India-adaptable"],
+  "scene": {
+    "background": { "type": "gradient", "value": "linear-gradient(135deg, rgba(30,27,46,1) 0%, rgba(12,11,18,1) 60%, rgba(7,6,10,1) 100%)" },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "hurt"
+  },
+  "narrative": {
+    "context": "A friend makes a joke about you in front of others. You feel hurt and angry, and also embarrassed.",
+    "prompt": "What understanding helps you respond more effectively?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Name mixed emotions and their triggers",
+      "description": "Recognize hurt (value), anger (boundary), embarrassment (social exposure). Decide to talk privately and state impact.",
+      "ei": { "effectivenessScore": 3, "effectivenessLevel": "high", "rationale": "Understands blended emotions and causes; supports accurate meaning-making before action." }
+    },
+    {
+      "optionId": "o2",
+      "label": "Assume it was harmless teasing",
+      "description": "Tell yourself you’re overreacting and ignore it.",
+      "ei": { "effectivenessScore": 2, "effectivenessLevel": "moderate", "rationale": "Reduces conflict, but may miss valid emotional signals about boundaries; partial understanding." }
+    },
+    {
+      "optionId": "o3",
+      "label": "Assume they wanted to humiliate you",
+      "description": "Conclude they intended harm and become resentful.",
+      "ei": { "effectivenessScore": 1, "effectivenessLevel": "low", "rationale": "Interprets intent without evidence; emotion understanding becomes rigid and negative." }
+    },
+    {
+      "optionId": "o4",
+      "label": "Humiliate them back",
+      "description": "Respond with a harsher joke to 'win.'",
+      "ei": { "effectivenessScore": 0, "effectivenessLevel": "very_low", "rationale": "Escalates and ignores emotional causes; undermines relationship repair." }
+    }
+  ]
+}
+

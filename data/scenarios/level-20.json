@@ -1,0 +1,43 @@
+{
+  "levelId": "level-20",
+  "title": "Angry Email Draft",
+  "branchPrimary": "Managing Emotions",
+  "theme": "Impulse control and reappraisal",
+  "culturalTags": ["work", "email", "conflict", "India-adaptable"],
+  "scene": {
+    "background": { "type": "gradient", "value": "linear-gradient(135deg, rgba(18,17,28,1) 0%, rgba(8,8,14,1) 60%, rgba(5,5,8,1) 100%)" },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "heated"
+  },
+  "narrative": {
+    "context": "A supervisor criticizes your work harshly. You draft an angry email reply and your finger hovers over Send.",
+    "prompt": "What is the most effective emotion management choice?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Delay sending; rewrite after cooling down",
+      "description": "Save the draft, take 10 minutes to cool down, then rewrite with specific facts and a request for clarity.",
+      "ei": { "effectivenessScore": 3, "effectivenessLevel": "high", "rationale": "Prevents impulsive action and redirects emotion into constructive communication—effective management." }
+    },
+    {
+      "optionId": "o2",
+      "label": "Send a short neutral reply now",
+      "description": "Reply minimally: 'Noted. I will update.'",
+      "ei": { "effectivenessScore": 2, "effectivenessLevel": "moderate", "rationale": "Avoids escalation, but may suppress emotion without processing; still reasonably effective." }
+    },
+    {
+      "optionId": "o3",
+      "label": "Send the angry email",
+      "description": "Send immediately so they know you’re upset.",
+      "ei": { "effectivenessScore": 1, "effectivenessLevel": "low", "rationale": "Emotion overrides long-term goals; increases conflict risk." }
+    },
+    {
+      "optionId": "o4",
+      "label": "Post about it on social media",
+      "description": "Vague-post or name the workplace online.",
+      "ei": { "effectivenessScore": 0, "effectivenessLevel": "very_low", "rationale": "Escalates publicly and harms outcomes; poor emotion management." }
+    }
+  ]
+}
+

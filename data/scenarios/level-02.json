@@ -1,0 +1,62 @@
+{
+  "levelId": "level-02",
+  "title": "Before the Viva",
+  "branchPrimary": "Using Emotions to Facilitate Thinking",
+  "theme": "Academic stress and performance",
+  "culturalTags": ["college", "evaluation", "stress", "India-adaptable"],
+  "scene": {
+    "background": {
+      "type": "gradient",
+      "value": "linear-gradient(135deg, rgba(21,19,33,1) 0%, rgba(10,10,18,1) 55%, rgba(7,6,10,1) 100%)"
+    },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "tense"
+  },
+  "narrative": {
+    "context": "Tomorrow is your project viva. You feel nervous, and your mind keeps replaying what could go wrong.",
+    "prompt": "How do you use your emotional state to prepare effectively tonight?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Channel the alertness into a plan",
+      "description": "Name the nervous energy as a signal. Create a short checklist (key slides, likely questions, 30-minute review blocks).",
+      "ei": {
+        "effectivenessScore": 3,
+        "effectivenessLevel": "high",
+        "rationale": "Uses emotion as information to prioritize attention and problem-solve, improving thinking without suppressing feelings."
+      }
+    },
+    {
+      "optionId": "o2",
+      "label": "Distract to calm down, then study",
+      "description": "Watch something light for an hour to reduce stress, then attempt revision.",
+      "ei": {
+        "effectivenessScore": 2,
+        "effectivenessLevel": "moderate",
+        "rationale": "Regulates arousal indirectly; can help thinking if time is controlled, but risks avoidance and reduced preparation."
+      }
+    },
+    {
+      "optionId": "o3",
+      "label": "Force yourself to study harder with self-criticism",
+      "description": "Tell yourself you’re behind and must push until late night, even if anxious increases.",
+      "ei": {
+        "effectivenessScore": 1,
+        "effectivenessLevel": "low",
+        "rationale": "Elevates threat-based emotion, often narrowing attention and impairing flexible thinking under pressure."
+      }
+    },
+    {
+      "optionId": "o4",
+      "label": "Ignore feelings and wing it",
+      "description": "Decide emotions are irrelevant and skip preparation; assume you’ll manage tomorrow.",
+      "ei": {
+        "effectivenessScore": 0,
+        "effectivenessLevel": "very_low",
+        "rationale": "Fails to use emotion as information; reduces adaptive planning and preparedness."
+      }
+    }
+  ]
+}
+

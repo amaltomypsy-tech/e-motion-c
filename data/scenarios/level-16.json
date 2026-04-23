@@ -1,0 +1,43 @@
+{
+  "levelId": "level-16",
+  "title": "Argument After a Misquote",
+  "branchPrimary": "Managing Emotions",
+  "theme": "De-escalation and repair",
+  "culturalTags": ["conflict", "miscommunication", "repair", "India-adaptable"],
+  "scene": {
+    "background": { "type": "gradient", "value": "linear-gradient(135deg, rgba(18,17,28,1) 0%, rgba(8,8,14,1) 60%, rgba(5,5,8,1) 100%)" },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "angry"
+  },
+  "narrative": {
+    "context": "In a heated discussion, someone misquotes you. You feel angry and tempted to prove them wrong publicly.",
+    "prompt": "What is the most emotionally effective response?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Lower intensity, then clarify",
+      "description": "Slow down, keep voice steady, and say: 'That’s not what I meant—let me rephrase.'",
+      "ei": { "effectivenessScore": 3, "effectivenessLevel": "high", "rationale": "Regulates anger and prioritizes clarity; de-escalates and supports constructive outcomes." }
+    },
+    {
+      "optionId": "o2",
+      "label": "Pause and revisit later",
+      "description": "Say you need a break and return to the topic when calmer.",
+      "ei": { "effectivenessScore": 2, "effectivenessLevel": "moderate", "rationale": "Prevents escalation, though it delays resolution; still supports emotion management." }
+    },
+    {
+      "optionId": "o3",
+      "label": "Correct them with sarcasm",
+      "description": "Mock the mistake to score a point.",
+      "ei": { "effectivenessScore": 1, "effectivenessLevel": "low", "rationale": "Expresses anger indirectly and increases defensiveness; poor regulation." }
+    },
+    {
+      "optionId": "o4",
+      "label": "Explode and attack",
+      "description": "Raise your voice and insult them.",
+      "ei": { "effectivenessScore": 0, "effectivenessLevel": "very_low", "rationale": "Impulsive discharge undermines goals and damages relationships." }
+    }
+  ]
+}
+

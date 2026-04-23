@@ -1,0 +1,43 @@
+{
+  "levelId": "level-08",
+  "title": "Family Pressure Call",
+  "branchPrimary": "Managing Emotions",
+  "theme": "Regulation under family expectations",
+  "culturalTags": ["family", "career", "pressure", "India-adaptable"],
+  "scene": {
+    "background": { "type": "gradient", "value": "linear-gradient(135deg, rgba(22,20,34,1) 0%, rgba(9,9,15,1) 62%, rgba(6,6,10,1) 100%)" },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "overwhelmed"
+  },
+  "narrative": {
+    "context": "A family member calls and insists you should choose a career path you’re unsure about. You feel overwhelmed and defensive.",
+    "prompt": "What response shows effective emotion management?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Regulate first, then set a respectful boundary",
+      "description": "Slow your breathing, then say: 'I hear your concern. I need time to decide. Can we talk after I gather information?'",
+      "ei": { "effectivenessScore": 3, "effectivenessLevel": "high", "rationale": "Reduces emotional reactivity and protects relationship while asserting autonomy—effective management." }
+    },
+    {
+      "optionId": "o2",
+      "label": "Change topic to avoid conflict",
+      "description": "Keep the call pleasant and postpone the discussion without stating your needs clearly.",
+      "ei": { "effectivenessScore": 2, "effectivenessLevel": "moderate", "rationale": "Avoids escalation short-term, but may build resentment and doesn’t resolve emotion drivers." }
+    },
+    {
+      "optionId": "o3",
+      "label": "Argue to prove you’re right",
+      "description": "Debate intensely to win the point.",
+      "ei": { "effectivenessScore": 1, "effectivenessLevel": "low", "rationale": "Heightens arousal and conflict; emotion takes over the goal." }
+    },
+    {
+      "optionId": "o4",
+      "label": "Hang up or say something hurtful",
+      "description": "End the call abruptly or insult them.",
+      "ei": { "effectivenessScore": 0, "effectivenessLevel": "very_low", "rationale": "Impulsive discharge damages relationship and doesn’t manage emotion effectively." }
+    }
+  ]
+}
+

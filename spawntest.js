@@ -1,0 +1,1 @@
+﻿const { spawn } = require('child_process');\nconst p = spawn(process.execPath, ['-e', 'console.log(\\'child ok\\')'], { stdio: 'inherit' });\np.on('error', (e) => { console.error('spawn error', e); process.exit(1); });\n

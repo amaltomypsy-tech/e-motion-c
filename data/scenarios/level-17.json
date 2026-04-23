@@ -1,0 +1,43 @@
+{
+  "levelId": "level-17",
+  "title": "Friend Avoids a Topic",
+  "branchPrimary": "Perceiving Emotions",
+  "theme": "Detecting discomfort and avoidance",
+  "culturalTags": ["friendship", "avoidance", "sensitivity", "India-adaptable"],
+  "scene": {
+    "background": { "type": "gradient", "value": "linear-gradient(135deg, rgba(24,22,36,1) 0%, rgba(10,9,16,1) 62%, rgba(6,6,10,1) 100%)" },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "concerned"
+  },
+  "narrative": {
+    "context": "When you mention a mutual friend, your friend quickly changes the topic and fidgets. You’re unsure what they’re feeling.",
+    "prompt": "What helps you perceive their emotion accurately?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Notice avoidance cues and check gently",
+      "description": "Observe topic shift + fidgeting, then ask privately: 'Did something happen? We can talk if you want.'",
+      "ei": { "effectivenessScore": 3, "effectivenessLevel": "high", "rationale": "Uses behavioral cues to infer possible discomfort while seeking confirmation—accurate perception." }
+    },
+    {
+      "optionId": "o2",
+      "label": "Assume they’re busy and move on",
+      "description": "Drop it without checking.",
+      "ei": { "effectivenessScore": 2, "effectivenessLevel": "moderate", "rationale": "Avoids pressure, but may miss emotional information; perception remains untested." }
+    },
+    {
+      "optionId": "o3",
+      "label": "Assume they’re gossiping",
+      "description": "Conclude they are hiding something and become suspicious.",
+      "ei": { "effectivenessScore": 1, "effectivenessLevel": "low", "rationale": "Jumps to a negative interpretation without evidence; perception becomes biased." }
+    },
+    {
+      "optionId": "o4",
+      "label": "Force the topic",
+      "description": "Insist they explain immediately in front of others.",
+      "ei": { "effectivenessScore": 0, "effectivenessLevel": "very_low", "rationale": "Increases social threat and reduces accurate emotional reading." }
+    }
+  ]
+}
+

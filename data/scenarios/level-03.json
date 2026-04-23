@@ -1,0 +1,62 @@
+{
+  "levelId": "level-03",
+  "title": "The Misread Message",
+  "branchPrimary": "Understanding Emotions",
+  "theme": "Relationship misunderstanding",
+  "culturalTags": ["relationship", "texting", "conflict", "India-adaptable"],
+  "scene": {
+    "background": {
+      "type": "gradient",
+      "value": "linear-gradient(135deg, rgba(30,27,46,1) 0%, rgba(12,11,18,1) 55%, rgba(7,6,10,1) 100%)"
+    },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "hurt"
+  },
+  "narrative": {
+    "context": "A person you’re dating replies: 'Okay.' to a message you sent with excitement. You feel hurt and start thinking they don’t care.",
+    "prompt": "What’s the most emotionally accurate interpretation to hold before you respond?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Multiple possibilities; ask for context",
+      "description": "Recognize hurt + uncertainty. Consider they may be busy, tired, or upset about something else. Ask: 'Everything okay?'",
+      "ei": {
+        "effectivenessScore": 3,
+        "effectivenessLevel": "high",
+        "rationale": "Understands mixed emotions and situational causes; keeps interpretation flexible and seeks clarifying information."
+      }
+    },
+    {
+      "optionId": "o2",
+      "label": "Assume mild disinterest but stay calm",
+      "description": "Interpret it as low enthusiasm, respond briefly, and check later in person.",
+      "ei": {
+        "effectivenessScore": 2,
+        "effectivenessLevel": "moderate",
+        "rationale": "Acknowledges possible meaning without escalation, but still leans toward a single interpretation."
+      }
+    },
+    {
+      "optionId": "o3",
+      "label": "They don’t value me",
+      "description": "Conclude they are losing interest; withdraw and stop messaging first.",
+      "ei": {
+        "effectivenessScore": 1,
+        "effectivenessLevel": "low",
+        "rationale": "Overgeneralizes from limited data; misses alternative emotional and situational explanations."
+      }
+    },
+    {
+      "optionId": "o4",
+      "label": "They’re disrespecting me; confront immediately",
+      "description": "Send an accusatory message about their tone.",
+      "ei": {
+        "effectivenessScore": 0,
+        "effectivenessLevel": "very_low",
+        "rationale": "Misattributes intent and escalates conflict; ignores emotional complexity and context."
+      }
+    }
+  ]
+}
+

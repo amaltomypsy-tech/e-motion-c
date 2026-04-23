@@ -1,0 +1,43 @@
+{
+  "levelId": "level-11",
+  "title": "Sarcasm in the Comment",
+  "branchPrimary": "Understanding Emotions",
+  "theme": "Interpreting intent and affect",
+  "culturalTags": ["social-media", "sarcasm", "misunderstanding", "India-adaptable"],
+  "scene": {
+    "background": { "type": "gradient", "value": "linear-gradient(135deg, rgba(28,26,42,1) 0%, rgba(10,9,16,1) 62%, rgba(6,6,10,1) 100%)" },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "stung"
+  },
+  "narrative": {
+    "context": "You post an achievement. Someone comments: 'Wow, must be nice.' You feel stung and unsure if it’s sarcasm or genuine.",
+    "prompt": "What understanding best fits before replying?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Recognize ambiguity; consider multiple emotions",
+      "description": "Hold that it could be envy, teasing, or neutral tone. Decide to clarify privately if needed.",
+      "ei": { "effectivenessScore": 3, "effectivenessLevel": "high", "rationale": "Understands that similar words can reflect different emotions and motives; keeps interpretation flexible." }
+    },
+    {
+      "optionId": "o2",
+      "label": "Assume mild negativity and respond politely",
+      "description": "Reply briefly without escalating and move on.",
+      "ei": { "effectivenessScore": 2, "effectivenessLevel": "moderate", "rationale": "Maintains control, but still settles on one emotional meaning without confirming." }
+    },
+    {
+      "optionId": "o3",
+      "label": "Assume they’re attacking you",
+      "description": "Conclude they are jealous and respond defensively.",
+      "ei": { "effectivenessScore": 1, "effectivenessLevel": "low", "rationale": "Locks into a single hostile interpretation; reduces accurate emotion understanding." }
+    },
+    {
+      "optionId": "o4",
+      "label": "Publicly shame them",
+      "description": "Reply with sarcasm to embarrass them.",
+      "ei": { "effectivenessScore": 0, "effectivenessLevel": "very_low", "rationale": "Escalates social threat and conflict; ignores emotional complexity and context." }
+    }
+  ]
+}
+

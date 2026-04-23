@@ -1,0 +1,43 @@
+{
+  "levelId": "level-04",
+  "title": "Roommate Noise, Exam Week",
+  "branchPrimary": "Managing Emotions",
+  "theme": "Boundary setting under stress",
+  "culturalTags": ["hostel", "exam-week", "conflict", "India-adaptable"],
+  "scene": {
+    "background": { "type": "gradient", "value": "linear-gradient(135deg, rgba(18,17,28,1) 0%, rgba(8,8,14,1) 60%, rgba(5,5,8,1) 100%)" },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "irritated"
+  },
+  "narrative": {
+    "context": "It’s exam week. Your roommate is watching reels loudly late at night. You feel irritated and your focus is slipping.",
+    "prompt": "What is the most emotionally effective next step?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Pause, then assert a clear request",
+      "description": "Take a breath, then say calmly: 'I’m struggling to focus. Can we keep audio low after 11 pm this week?'",
+      "ei": { "effectivenessScore": 3, "effectivenessLevel": "high", "rationale": "Regulates your arousal first, then uses a clear boundary to reduce conflict and protect goals—effective emotion management." }
+    },
+    {
+      "optionId": "o2",
+      "label": "Use a practical workaround first",
+      "description": "Put on earplugs/headphones now and plan to discuss a quiet-hours agreement tomorrow.",
+      "ei": { "effectivenessScore": 2, "effectivenessLevel": "moderate", "rationale": "Manages immediate distress with a coping strategy, but delays communication—still reasonably effective." }
+    },
+    {
+      "optionId": "o3",
+      "label": "Confront sharply in the moment",
+      "description": "Say: 'Can you stop? You’re being selfish.'",
+      "ei": { "effectivenessScore": 1, "effectivenessLevel": "low", "rationale": "Expresses emotion without regulating tone; increases defensiveness and escalates conflict." }
+    },
+    {
+      "optionId": "o4",
+      "label": "Blast your own audio to retaliate",
+      "description": "Play something loud so they 'get the message.'",
+      "ei": { "effectivenessScore": 0, "effectivenessLevel": "very_low", "rationale": "Dysregulates and amplifies conflict; avoids direct, goal-aligned management." }
+    }
+  ]
+}
+

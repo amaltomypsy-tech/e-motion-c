@@ -1,0 +1,43 @@
+{
+  "levelId": "level-27",
+  "title": "Misunderstood Voice Note",
+  "branchPrimary": "Understanding Emotions",
+  "theme": "Context and emotional meaning",
+  "culturalTags": ["messaging", "voice-note", "misunderstanding", "India-adaptable"],
+  "scene": {
+    "background": { "type": "gradient", "value": "linear-gradient(135deg, rgba(30,27,46,1) 0%, rgba(12,11,18,1) 60%, rgba(7,6,10,1) 100%)" },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "confused"
+  },
+  "narrative": {
+    "context": "You send a voice note quickly. The other person replies: 'Why are you angry?' You didn’t intend anger.",
+    "prompt": "What understanding best helps you handle this?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Acknowledge perception and clarify intent",
+      "description": "Understand that tone can be misread. Reply: 'I wasn’t angry—just rushed. Sorry it sounded that way.'",
+      "ei": { "effectivenessScore": 3, "effectivenessLevel": "high", "rationale": "Understands how emotion signals can be misinterpreted across channels; addresses both intent and impact." }
+    },
+    {
+      "optionId": "o2",
+      "label": "Explain your situation only",
+      "description": "Say you were busy, without acknowledging their experience.",
+      "ei": { "effectivenessScore": 2, "effectivenessLevel": "moderate", "rationale": "Clarifies context but may miss their emotional interpretation; partial understanding." }
+    },
+    {
+      "optionId": "o3",
+      "label": "Blame them for being sensitive",
+      "description": "Say they’re overreacting.",
+      "ei": { "effectivenessScore": 1, "effectivenessLevel": "low", "rationale": "Misunderstands emotional perception differences; increases conflict." }
+    },
+    {
+      "optionId": "o4",
+      "label": "Escalate with a defensive tone",
+      "description": "Reply angrily: 'I’m not angry, stop accusing me.'",
+      "ei": { "effectivenessScore": 0, "effectivenessLevel": "very_low", "rationale": "Turns misunderstanding into conflict; poor emotional meaning-making." }
+    }
+  ]
+}
+

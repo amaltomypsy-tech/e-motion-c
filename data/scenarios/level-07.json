@@ -1,0 +1,43 @@
+{
+  "levelId": "level-07",
+  "title": "A Friend Cancels Again",
+  "branchPrimary": "Understanding Emotions",
+  "theme": "Attribution and mixed feelings",
+  "culturalTags": ["friendship", "plans", "disappointment", "India-adaptable"],
+  "scene": {
+    "background": { "type": "gradient", "value": "linear-gradient(135deg, rgba(30,27,46,1) 0%, rgba(12,11,18,1) 60%, rgba(7,6,10,1) 100%)" },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "disappointed"
+  },
+  "narrative": {
+    "context": "A close friend cancels plans for the third time, saying they’re 'busy'. You feel disappointed and slightly angry.",
+    "prompt": "What understanding best fits before you respond?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Hold multiple explanations",
+      "description": "Acknowledge hurt + anger, and consider possibilities: genuine overload, avoidance, or shifting priorities—then ask calmly.",
+      "ei": { "effectivenessScore": 3, "effectivenessLevel": "high", "rationale": "Recognizes mixed emotions and potential causes; avoids a single-story conclusion—core to understanding emotions." }
+    },
+    {
+      "optionId": "o2",
+      "label": "Assume they’re careless but stay polite",
+      "description": "Interpret it as poor planning and respond briefly; decide later what it means.",
+      "ei": { "effectivenessScore": 2, "effectivenessLevel": "moderate", "rationale": "Keeps behavior controlled, but settles on one explanation without clarifying emotional causes." }
+    },
+    {
+      "optionId": "o3",
+      "label": "They don’t respect me",
+      "description": "Conclude the cancellations prove they don’t care; withdraw.",
+      "ei": { "effectivenessScore": 1, "effectivenessLevel": "low", "rationale": "Overgeneralizes from behavior without exploring emotion/context; reduces accurate understanding." }
+    },
+    {
+      "optionId": "o4",
+      "label": "Attack their character immediately",
+      "description": "Send an angry message calling them unreliable and selfish.",
+      "ei": { "effectivenessScore": 0, "effectivenessLevel": "very_low", "rationale": "Turns emotion into accusation without understanding; escalates conflict." }
+    }
+  ]
+}
+

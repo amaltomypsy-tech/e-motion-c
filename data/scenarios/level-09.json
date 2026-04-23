@@ -1,0 +1,43 @@
+{
+  "levelId": "level-09",
+  "title": "Tone in the Classroom",
+  "branchPrimary": "Perceiving Emotions",
+  "theme": "Reading nonverbal cues",
+  "culturalTags": ["college", "classroom", "nonverbal", "India-adaptable"],
+  "scene": {
+    "background": { "type": "gradient", "value": "linear-gradient(135deg, rgba(26,24,38,1) 0%, rgba(10,9,16,1) 62%, rgba(6,6,10,1) 100%)" },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "curious"
+  },
+  "narrative": {
+    "context": "In class, a friend answers you with a short tone and avoids eye contact. You’re unsure if they’re upset with you or just tired.",
+    "prompt": "What is the best way to perceive their emotion accurately?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Observe multiple cues, then check in privately",
+      "description": "Notice posture, timing, and context. Later ask: 'You seemed quiet—are you okay?'",
+      "ei": { "effectivenessScore": 3, "effectivenessLevel": "high", "rationale": "Uses multiple emotional cues and seeks clarification—improves accuracy in perceiving emotions." }
+    },
+    {
+      "optionId": "o2",
+      "label": "Assume they’re stressed and give space",
+      "description": "Step back for now and wait to see if their behavior changes.",
+      "ei": { "effectivenessScore": 2, "effectivenessLevel": "moderate", "rationale": "Avoids escalation, but relies on assumption rather than evidence-based cue reading." }
+    },
+    {
+      "optionId": "o3",
+      "label": "Assume it’s about you",
+      "description": "Conclude they’re angry at you and become defensive.",
+      "ei": { "effectivenessScore": 1, "effectivenessLevel": "low", "rationale": "Perception becomes biased by self-focus; ignores alternative emotional explanations." }
+    },
+    {
+      "optionId": "o4",
+      "label": "Confront them publicly",
+      "description": "Ask loudly in front of others: 'Why are you acting like this?'",
+      "ei": { "effectivenessScore": 0, "effectivenessLevel": "very_low", "rationale": "Adds social threat and reduces accurate perception; escalates unnecessarily." }
+    }
+  ]
+}
+

@@ -1,0 +1,43 @@
+{
+  "levelId": "level-31",
+  "title": "Final Message Misread",
+  "branchPrimary": "Understanding Emotions",
+  "theme": "Closing ambiguity and meaning",
+  "culturalTags": ["messaging", "closure", "ambiguity", "India-adaptable"],
+  "scene": {
+    "background": { "type": "gradient", "value": "linear-gradient(135deg, rgba(30,27,46,1) 0%, rgba(12,11,18,1) 60%, rgba(7,6,10,1) 100%)" },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "uncertain"
+  },
+  "narrative": {
+    "context": "After a long conversation, the other person ends with: 'Fine.' You feel uneasy and interpret it as anger, but you’re not sure.",
+    "prompt": "What understanding helps you respond with emotional accuracy?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Treat it as ambiguous and clarify",
+      "description": "Recognize unease as uncertainty. Consider that 'Fine' could mean tiredness, resignation, or irritation. Ask: 'Are we okay?'",
+      "ei": { "effectivenessScore": 3, "effectivenessLevel": "high", "rationale": "Understands that brief words can carry multiple emotional meanings; seeks clarification before concluding." }
+    },
+    {
+      "optionId": "o2",
+      "label": "Assume mild irritation and disengage",
+      "description": "Reply briefly and plan to revisit later.",
+      "ei": { "effectivenessScore": 2, "effectivenessLevel": "moderate", "rationale": "Avoids escalation, but still assumes one meaning without checking; partial understanding." }
+    },
+    {
+      "optionId": "o3",
+      "label": "Assume they’re angry at you",
+      "description": "Apologize repeatedly without knowing what happened.",
+      "ei": { "effectivenessScore": 1, "effectivenessLevel": "low", "rationale": "Interprets intent without evidence; emotional meaning-making becomes biased." }
+    },
+    {
+      "optionId": "o4",
+      "label": "Accuse them of being passive-aggressive",
+      "description": "Confront harshly about their tone.",
+      "ei": { "effectivenessScore": 0, "effectivenessLevel": "very_low", "rationale": "Escalates conflict; ignores alternative emotional meanings and context." }
+    }
+  ]
+}
+

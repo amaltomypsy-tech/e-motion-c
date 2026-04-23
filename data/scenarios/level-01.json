@@ -1,0 +1,62 @@
+{
+  "levelId": "level-01",
+  "title": "The Read Receipt",
+  "branchPrimary": "Perceiving Emotions",
+  "theme": "Social media ambiguity",
+  "culturalTags": ["college", "messaging", "ambiguity", "India-adaptable"],
+  "scene": {
+    "background": {
+      "type": "gradient",
+      "value": "linear-gradient(135deg, rgba(20,19,33,1) 0%, rgba(10,9,16,1) 55%, rgba(5,5,8,1) 100%)"
+    },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "uncertain"
+  },
+  "narrative": {
+    "context": "You sent a message to a close friend about meeting after class. The message shows 'seen' but there’s no reply for hours.",
+    "prompt": "What do you do next?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Pause and read the cues",
+      "description": "Notice your body cues and the uncertainty. Check for other signals (their recent tone, context, timing) before assuming intent.",
+      "ei": {
+        "effectivenessScore": 3,
+        "effectivenessLevel": "high",
+        "rationale": "Accurately perceives emotion signals under ambiguity (your own anxiety + limited external cues) without jumping to conclusions."
+      }
+    },
+    {
+      "optionId": "o2",
+      "label": "Send one neutral follow-up",
+      "description": "Send a short check-in: 'Hey—just checking if you’re free later. No rush.'",
+      "ei": {
+        "effectivenessScore": 2,
+        "effectivenessLevel": "moderate",
+        "rationale": "Keeps interpretation tentative and seeks more data, but may still be driven by discomfort with ambiguity."
+      }
+    },
+    {
+      "optionId": "o3",
+      "label": "Assume they’re upset and apologize",
+      "description": "Send: 'Sorry if I upset you—did I do something wrong?'",
+      "ei": {
+        "effectivenessScore": 1,
+        "effectivenessLevel": "low",
+        "rationale": "Misreads limited cues as evidence of conflict; increases emotional load without confirming the situation."
+      }
+    },
+    {
+      "optionId": "o4",
+      "label": "Post a pointed story/status",
+      "description": "Indirectly express irritation online so they notice.",
+      "ei": {
+        "effectivenessScore": 0,
+        "effectivenessLevel": "very_low",
+        "rationale": "Amplifies ambiguity and social threat; avoids accurate perception and direct information-gathering."
+      }
+    }
+  ]
+}
+

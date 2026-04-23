@@ -1,0 +1,43 @@
+{
+  "levelId": "level-13",
+  "title": "Friend’s Smile Feels Off",
+  "branchPrimary": "Perceiving Emotions",
+  "theme": "Subtle affect detection",
+  "culturalTags": ["friendship", "nonverbal", "subtle-cues", "India-adaptable"],
+  "scene": {
+    "background": { "type": "gradient", "value": "linear-gradient(135deg, rgba(26,24,38,1) 0%, rgba(9,9,15,1) 62%, rgba(6,6,10,1) 100%)" },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "attentive"
+  },
+  "narrative": {
+    "context": "A friend smiles and says they’re 'fine', but their eyes look tired and their voice is flat.",
+    "prompt": "What helps you perceive their emotion more accurately?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Notice mismatched cues and invite sharing",
+      "description": "Observe face + voice mismatch and gently ask: 'You seem tired—want to talk?'",
+      "ei": { "effectivenessScore": 3, "effectivenessLevel": "high", "rationale": "Integrates multiple emotional channels (verbal/nonverbal) to improve perception accuracy." }
+    },
+    {
+      "optionId": "o2",
+      "label": "Assume they need space",
+      "description": "Give them room without checking in.",
+      "ei": { "effectivenessScore": 2, "effectivenessLevel": "moderate", "rationale": "May be respectful, but perception is not confirmed; could miss a need for support." }
+    },
+    {
+      "optionId": "o3",
+      "label": "Take their words literally only",
+      "description": "Accept 'fine' and ignore nonverbal signals.",
+      "ei": { "effectivenessScore": 1, "effectivenessLevel": "low", "rationale": "Over-relies on verbal content; misses emotional cues that refine perception." }
+    },
+    {
+      "optionId": "o4",
+      "label": "Insist they must be upset",
+      "description": "Push them to admit something is wrong.",
+      "ei": { "effectivenessScore": 0, "effectivenessLevel": "very_low", "rationale": "Forces an interpretation; can create resistance and reduces accurate perception." }
+    }
+  ]
+}
+

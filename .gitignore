@@ -1,0 +1,6 @@
+node_modules
+.next
+.env.local
+~$all_responses.xlsx
+npm-cache
+.npm-cache

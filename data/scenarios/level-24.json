@@ -1,0 +1,43 @@
+{
+  "levelId": "level-24",
+  "title": "After a Heated Debate",
+  "branchPrimary": "Managing Emotions",
+  "theme": "Recovery and regulation",
+  "culturalTags": ["debate", "cool-down", "self-regulation", "India-adaptable"],
+  "scene": {
+    "background": { "type": "gradient", "value": "linear-gradient(135deg, rgba(18,17,28,1) 0%, rgba(8,8,14,1) 60%, rgba(5,5,8,1) 100%)" },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "agitated"
+  },
+  "narrative": {
+    "context": "After a heated debate, your body still feels tense and you keep replaying the conversation. You want to calm down but feel stuck.",
+    "prompt": "What is the most effective emotion management step?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Use a structured cool-down",
+      "description": "Do a short walk or breathing, then write one reflection: what mattered, what you can control next time, and one repair step if needed.",
+      "ei": { "effectivenessScore": 3, "effectivenessLevel": "high", "rationale": "Combines physiological down-regulation with cognitive reframing—effective management." }
+    },
+    {
+      "optionId": "o2",
+      "label": "Distract for a while",
+      "description": "Watch something to shift attention away from rumination.",
+      "ei": { "effectivenessScore": 2, "effectivenessLevel": "moderate", "rationale": "Can reduce arousal short-term, but may not resolve the emotional loop." }
+    },
+    {
+      "optionId": "o3",
+      "label": "Replay the argument to 'win' mentally",
+      "description": "Keep rehearsing comebacks.",
+      "ei": { "effectivenessScore": 1, "effectivenessLevel": "low", "rationale": "Rumination sustains arousal; weak regulation." }
+    },
+    {
+      "optionId": "o4",
+      "label": "Message them immediately in anger",
+      "description": "Send more arguments to continue the fight.",
+      "ei": { "effectivenessScore": 0, "effectivenessLevel": "very_low", "rationale": "Escalation increases distress and conflict; poor management." }
+    }
+  ]
+}
+

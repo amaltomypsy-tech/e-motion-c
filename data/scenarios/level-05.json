@@ -1,0 +1,43 @@
+{
+  "levelId": "level-05",
+  "title": "The Group Chat Silence",
+  "branchPrimary": "Perceiving Emotions",
+  "theme": "Uncertainty in peer dynamics",
+  "culturalTags": ["friends", "group-chat", "ambiguity", "India-adaptable"],
+  "scene": {
+    "background": { "type": "gradient", "value": "linear-gradient(135deg, rgba(24,22,36,1) 0%, rgba(10,9,16,1) 62%, rgba(6,6,10,1) 100%)" },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "uneasy"
+  },
+  "narrative": {
+    "context": "You shared an idea in your friend group chat. No one reacts for hours. You feel uneasy and start checking the chat repeatedly.",
+    "prompt": "What helps you perceive what’s happening more accurately?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Name your feeling and look for evidence",
+      "description": "Notice anxiety + uncertainty, then check contextual cues (time of day, past patterns, whether others are also quiet).",
+      "ei": { "effectivenessScore": 3, "effectivenessLevel": "high", "rationale": "Separates internal emotion signals from external evidence, improving accuracy in perceiving emotions under ambiguity." }
+    },
+    {
+      "optionId": "o2",
+      "label": "Ask one clarifying question",
+      "description": "Send a neutral follow-up: 'Just checking—does this idea work for everyone?'",
+      "ei": { "effectivenessScore": 2, "effectivenessLevel": "moderate", "rationale": "Seeks more information, but may still be driven by discomfort with uncertainty rather than careful cue-reading." }
+    },
+    {
+      "optionId": "o3",
+      "label": "Assume they’re annoyed",
+      "description": "Conclude you said something wrong and withdraw without checking.",
+      "ei": { "effectivenessScore": 1, "effectivenessLevel": "low", "rationale": "Misreads absence of response as negative emotion without evidence; perception becomes biased by anxiety." }
+    },
+    {
+      "optionId": "o4",
+      "label": "Send multiple messages to force a response",
+      "description": "Keep messaging until someone replies.",
+      "ei": { "effectivenessScore": 0, "effectivenessLevel": "very_low", "rationale": "Escalates without understanding cues; reduces accuracy and increases social pressure." }
+    }
+  ]
+}
+

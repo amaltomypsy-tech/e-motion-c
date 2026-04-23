@@ -1,0 +1,43 @@
+{
+  "levelId": "level-18",
+  "title": "Decision Fatigue at Night",
+  "branchPrimary": "Using Emotions to Facilitate Thinking",
+  "theme": "Using tiredness to guide decisions",
+  "culturalTags": ["sleep", "decision-making", "self-care", "India-adaptable"],
+  "scene": {
+    "background": { "type": "gradient", "value": "linear-gradient(135deg, rgba(21,19,33,1) 0%, rgba(8,8,14,1) 62%, rgba(5,5,8,1) 100%)" },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "tired"
+  },
+  "narrative": {
+    "context": "It’s late. You feel tired and irritable while trying to choose between two important options (course/project path).",
+    "prompt": "How do you use your emotional state to support better thinking?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Use fatigue as a cue to postpone and structure",
+      "description": "Recognize tiredness may bias choices. Write pros/cons and revisit in the morning with a clear plan.",
+      "ei": { "effectivenessScore": 3, "effectivenessLevel": "high", "rationale": "Uses emotion/physiological state as information to protect decision quality—facilitates thinking." }
+    },
+    {
+      "optionId": "o2",
+      "label": "Ask someone else to decide for you",
+      "description": "Hand over the decision to reduce stress.",
+      "ei": { "effectivenessScore": 2, "effectivenessLevel": "moderate", "rationale": "Reduces immediate discomfort, but doesn’t fully engage cognition; partial use of emotional information." }
+    },
+    {
+      "optionId": "o3",
+      "label": "Decide quickly to end discomfort",
+      "description": "Choose impulsively just to stop thinking about it.",
+      "ei": { "effectivenessScore": 1, "effectivenessLevel": "low", "rationale": "Emotion drives haste; thinking quality declines." }
+    },
+    {
+      "optionId": "o4",
+      "label": "Ruminate for hours",
+      "description": "Keep thinking in circles without structure.",
+      "ei": { "effectivenessScore": 0, "effectivenessLevel": "very_low", "rationale": "Emotion amplifies unproductive thinking; no facilitation of problem-solving." }
+    }
+  ]
+}
+

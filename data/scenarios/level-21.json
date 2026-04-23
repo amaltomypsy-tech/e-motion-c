@@ -1,0 +1,43 @@
+{
+  "levelId": "level-21",
+  "title": "Noticing a Classmate’s Stress",
+  "branchPrimary": "Perceiving Emotions",
+  "theme": "Reading stress signals",
+  "culturalTags": ["college", "stress", "peer-support", "India-adaptable"],
+  "scene": {
+    "background": { "type": "gradient", "value": "linear-gradient(135deg, rgba(26,24,38,1) 0%, rgba(9,9,15,1) 62%, rgba(6,6,10,1) 100%)" },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "observant"
+  },
+  "narrative": {
+    "context": "A classmate keeps tapping their foot, sighing, and rereading the same line. They say 'I’m okay' but seem tense.",
+    "prompt": "What helps you perceive their emotion accurately?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Integrate cues and offer a low-pressure check-in",
+      "description": "Notice physiological cues of tension and ask: 'You seem stressed—want a quick break or help?'",
+      "ei": { "effectivenessScore": 3, "effectivenessLevel": "high", "rationale": "Combines behavioral/physiological cues with respectful inquiry to improve perception accuracy." }
+    },
+    {
+      "optionId": "o2",
+      "label": "Assume it’s none of your business",
+      "description": "Ignore cues to avoid awkwardness.",
+      "ei": { "effectivenessScore": 2, "effectivenessLevel": "moderate", "rationale": "Avoids intrusion, but misses a chance to clarify emotions; perception remains incomplete." }
+    },
+    {
+      "optionId": "o3",
+      "label": "Assume they’re angry at you",
+      "description": "Interpret tension as personal hostility.",
+      "ei": { "effectivenessScore": 1, "effectivenessLevel": "low", "rationale": "Misreads general stress as targeted anger; perception is biased." }
+    },
+    {
+      "optionId": "o4",
+      "label": "Tell them to stop being dramatic",
+      "description": "Dismiss their signals.",
+      "ei": { "effectivenessScore": 0, "effectivenessLevel": "very_low", "rationale": "Invalidates and blocks accurate emotional reading; increases distress." }
+    }
+  ]
+}
+

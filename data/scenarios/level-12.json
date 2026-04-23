@@ -1,0 +1,43 @@
+{
+  "levelId": "level-12",
+  "title": "Pre-Presentation Panic",
+  "branchPrimary": "Managing Emotions",
+  "theme": "Regulating acute anxiety",
+  "culturalTags": ["presentation", "anxiety", "college", "India-adaptable"],
+  "scene": {
+    "background": { "type": "gradient", "value": "linear-gradient(135deg, rgba(20,19,33,1) 0%, rgba(8,8,14,1) 62%, rgba(5,5,8,1) 100%)" },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "panicked"
+  },
+  "narrative": {
+    "context": "You’re about to present. Your heart races and your mind goes blank. You feel panic building.",
+    "prompt": "What is the most effective emotion management strategy right now?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Ground + slow breathing, then one cue card",
+      "description": "Use a brief breathing cycle, feel your feet on the ground, then focus on your first 2 talking points.",
+      "ei": { "effectivenessScore": 3, "effectivenessLevel": "high", "rationale": "Down-regulates panic and redirects attention to manageable steps—effective short-term emotion management." }
+    },
+    {
+      "optionId": "o2",
+      "label": "Distract briefly to reduce arousal",
+      "description": "Look away, sip water, and try to calm down before starting.",
+      "ei": { "effectivenessScore": 2, "effectivenessLevel": "moderate", "rationale": "May reduce arousal, but lacks a clear plan to re-engage attention and confidence." }
+    },
+    {
+      "optionId": "o3",
+      "label": "Push through while criticizing yourself",
+      "description": "Tell yourself you’re failing and force yourself to start immediately.",
+      "ei": { "effectivenessScore": 1, "effectivenessLevel": "low", "rationale": "Self-criticism can increase threat response; emotion becomes harder to manage." }
+    },
+    {
+      "optionId": "o4",
+      "label": "Escape the situation",
+      "description": "Leave the room or ask to skip without trying regulation.",
+      "ei": { "effectivenessScore": 0, "effectivenessLevel": "very_low", "rationale": "Avoids managing the emotion; reinforces panic over time." }
+    }
+  ]
+}
+

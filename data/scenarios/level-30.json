@@ -1,0 +1,43 @@
+{
+  "levelId": "level-30",
+  "title": "Choosing Feedback Words",
+  "branchPrimary": "Using Emotions to Facilitate Thinking",
+  "theme": "Emotion-informed communication planning",
+  "culturalTags": ["teamwork", "feedback", "planning", "India-adaptable"],
+  "scene": {
+    "background": { "type": "gradient", "value": "linear-gradient(135deg, rgba(21,19,33,1) 0%, rgba(8,8,14,1) 62%, rgba(5,5,8,1) 100%)" },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "nervous"
+  },
+  "narrative": {
+    "context": "A teammate’s work affected your project timeline. You feel frustrated but also nervous about giving feedback.",
+    "prompt": "How do you use these emotions to choose effective words?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Use emotion to choose clarity + respect",
+      "description": "Let frustration signal the impact; let nervousness signal the need for care. Use specifics: behavior, impact, request.",
+      "ei": { "effectivenessScore": 3, "effectivenessLevel": "high", "rationale": "Emotions guide both content and tone planning—supports clear thinking and effective communication." }
+    },
+    {
+      "optionId": "o2",
+      "label": "Hint indirectly",
+      "description": "Make vague comments so it doesn’t feel confrontational.",
+      "ei": { "effectivenessScore": 2, "effectivenessLevel": "moderate", "rationale": "Reduces discomfort, but emotion is not used to support clear thinking and problem-solving." }
+    },
+    {
+      "optionId": "o3",
+      "label": "Delay until you explode",
+      "description": "Avoid the talk until frustration builds.",
+      "ei": { "effectivenessScore": 1, "effectivenessLevel": "low", "rationale": "Emotions are not used constructively; thinking and timing worsen." }
+    },
+    {
+      "optionId": "o4",
+      "label": "Criticize their character",
+      "description": "Say they are lazy or unreliable.",
+      "ei": { "effectivenessScore": 0, "effectivenessLevel": "very_low", "rationale": "Emotion turns into blame; undermines problem-solving and relationship." }
+    }
+  ]
+}
+

@@ -1,0 +1,43 @@
+{
+  "levelId": "level-29",
+  "title": "Noticing Your Own Irritation",
+  "branchPrimary": "Perceiving Emotions",
+  "theme": "Self-perception of emotion cues",
+  "culturalTags": ["self-awareness", "irritation", "daily-life", "India-adaptable"],
+  "scene": {
+    "background": { "type": "gradient", "value": "linear-gradient(135deg, rgba(24,22,36,1) 0%, rgba(10,9,16,1) 62%, rgba(6,6,10,1) 100%)" },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "irritable"
+  },
+  "narrative": {
+    "context": "You notice you’re snapping at small things today. Your shoulders are tense and you feel impatient in conversations.",
+    "prompt": "What is the most accurate way to perceive what’s happening emotionally?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Check body cues and likely triggers",
+      "description": "Notice tension and impatience; scan for triggers (sleep, hunger, stress, unresolved worry) before acting.",
+      "ei": { "effectivenessScore": 3, "effectivenessLevel": "high", "rationale": "Uses internal cues (body + attention) to perceive emotion accurately and separate triggers from targets." }
+    },
+    {
+      "optionId": "o2",
+      "label": "Assume everyone else is annoying",
+      "description": "Decide people are the problem and avoid them.",
+      "ei": { "effectivenessScore": 2, "effectivenessLevel": "moderate", "rationale": "May reduce conflict short-term, but misses self-cues and true trigger; perception remains incomplete." }
+    },
+    {
+      "optionId": "o3",
+      "label": "Ignore it until it goes away",
+      "description": "Continue as normal without noticing patterns.",
+      "ei": { "effectivenessScore": 1, "effectivenessLevel": "low", "rationale": "Fails to perceive emotion signals; likely leads to reactive behavior." }
+    },
+    {
+      "optionId": "o4",
+      "label": "Label yourself as a 'bad person'",
+      "description": "Assume irritation means something is wrong with you.",
+      "ei": { "effectivenessScore": 0, "effectivenessLevel": "very_low", "rationale": "Turns emotion into global self-judgment; blocks accurate perception of triggers and needs." }
+    }
+  ]
+}
+

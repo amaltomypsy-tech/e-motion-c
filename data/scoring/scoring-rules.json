@@ -1,0 +1,17 @@
+{
+  "effectivenessLevels": {
+    "high": { "score": 3, "label": "High EI effectiveness" },
+    "moderate": { "score": 2, "label": "Moderate EI effectiveness" },
+    "low": { "score": 1, "label": "Low EI effectiveness" },
+    "very_low": { "score": 0, "label": "Very low EI effectiveness" }
+  },
+  "normalization": {
+    "overallScaleMax": 100,
+    "branchScaleMax": 100
+  },
+  "notes": [
+    "This prototype maps scores to EI effectiveness only.",
+    "Future psychometric validation can adjust weights, IRT parameters, and reliability metrics."
+  ]
+}
+

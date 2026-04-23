@@ -1,0 +1,43 @@
+{
+  "levelId": "level-23",
+  "title": "Two Friends, One Conflict",
+  "branchPrimary": "Understanding Emotions",
+  "theme": "Perspective and emotional causes",
+  "culturalTags": ["friends", "conflict", "perspective", "India-adaptable"],
+  "scene": {
+    "background": { "type": "gradient", "value": "linear-gradient(135deg, rgba(30,27,46,1) 0%, rgba(12,11,18,1) 60%, rgba(7,6,10,1) 100%)" },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "caught-between"
+  },
+  "narrative": {
+    "context": "Two friends argue. One seems angry, the other seems withdrawn. Both ask you to take sides.",
+    "prompt": "What understanding helps you respond effectively?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Identify differing emotional needs",
+      "description": "See anger may signal feeling unheard; withdrawal may signal overwhelm or hurt. Offer to listen separately without taking sides.",
+      "ei": { "effectivenessScore": 3, "effectivenessLevel": "high", "rationale": "Understands how different emotions map to needs and context; supports balanced, effective response." }
+    },
+    {
+      "optionId": "o2",
+      "label": "Assume both are being immature",
+      "description": "Tell them to stop fighting without exploring what’s underneath.",
+      "ei": { "effectivenessScore": 2, "effectivenessLevel": "moderate", "rationale": "Reduces immediate tension, but misses deeper emotional causes; partial understanding." }
+    },
+    {
+      "optionId": "o3",
+      "label": "Pick the calmer person as 'right'",
+      "description": "Assume the angry person is wrong and side with the withdrawn friend.",
+      "ei": { "effectivenessScore": 1, "effectivenessLevel": "low", "rationale": "Equates visible emotion with correctness; misunderstands emotional meaning." }
+    },
+    {
+      "optionId": "o4",
+      "label": "Spread the conflict",
+      "description": "Tell others about it and intensify group pressure.",
+      "ei": { "effectivenessScore": 0, "effectivenessLevel": "very_low", "rationale": "Escalates and ignores emotional dynamics; undermines repair." }
+    }
+  ]
+}
+

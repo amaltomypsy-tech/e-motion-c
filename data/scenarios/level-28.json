@@ -1,0 +1,43 @@
+{
+  "levelId": "level-28",
+  "title": "Jealousy Spike",
+  "branchPrimary": "Managing Emotions",
+  "theme": "Regulating comparison and jealousy",
+  "culturalTags": ["comparison", "social-media", "jealousy", "India-adaptable"],
+  "scene": {
+    "background": { "type": "gradient", "value": "linear-gradient(135deg, rgba(18,17,28,1) 0%, rgba(8,8,14,1) 60%, rgba(5,5,8,1) 100%)" },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "jealous"
+  },
+  "narrative": {
+    "context": "You see a peer’s success post and feel jealousy and self-doubt. You’re tempted to comment negatively or shut down.",
+    "prompt": "What is the most effective way to manage this emotion?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Name it, reframe, and choose a value-aligned action",
+      "description": "Acknowledge jealousy without judging it; reframe as a signal of your goals; take one small step toward your own plan.",
+      "ei": { "effectivenessScore": 3, "effectivenessLevel": "high", "rationale": "Regulates comparison-driven emotion through acceptance + reframing; redirects to constructive behavior." }
+    },
+    {
+      "optionId": "o2",
+      "label": "Mute the account for now",
+      "description": "Reduce triggers temporarily and return later when calmer.",
+      "ei": { "effectivenessScore": 2, "effectivenessLevel": "moderate", "rationale": "Manages exposure to triggers; helpful short-term but may avoid processing long-term." }
+    },
+    {
+      "optionId": "o3",
+      "label": "Vent to others repeatedly",
+      "description": "Complain about unfairness and compare yourself constantly.",
+      "ei": { "effectivenessScore": 1, "effectivenessLevel": "low", "rationale": "Sustains jealousy and self-doubt; weak regulation." }
+    },
+    {
+      "optionId": "o4",
+      "label": "Leave a spiteful comment",
+      "description": "Post something negative to reduce your discomfort.",
+      "ei": { "effectivenessScore": 0, "effectivenessLevel": "very_low", "rationale": "Impulsive discharge harms relationships and doesn’t manage emotion effectively." }
+    }
+  ]
+}
+

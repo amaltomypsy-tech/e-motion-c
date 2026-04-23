@@ -1,0 +1,43 @@
+{
+  "levelId": "level-25",
+  "title": "Quiet After Your Story",
+  "branchPrimary": "Perceiving Emotions",
+  "theme": "Noticing group mood shifts",
+  "culturalTags": ["friends", "conversation", "mood-shift", "India-adaptable"],
+  "scene": {
+    "background": { "type": "gradient", "value": "linear-gradient(135deg, rgba(24,22,36,1) 0%, rgba(10,9,16,1) 62%, rgba(6,6,10,1) 100%)" },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "self-conscious"
+  },
+  "narrative": {
+    "context": "You share a story at a meet-up. The group gets quieter and someone looks away. You feel self-conscious.",
+    "prompt": "What helps you perceive the group’s emotion more accurately?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Scan for multiple cues, not just silence",
+      "description": "Notice facial expressions, posture, and whether others are still engaged. Ask a neutral question to check understanding.",
+      "ei": { "effectivenessScore": 3, "effectivenessLevel": "high", "rationale": "Perception improves when multiple cues are integrated; silence alone is ambiguous." }
+    },
+    {
+      "optionId": "o2",
+      "label": "Assume they’re just tired",
+      "description": "Decide it’s late and move to a new topic.",
+      "ei": { "effectivenessScore": 2, "effectivenessLevel": "moderate", "rationale": "Keeps things moving, but still assumes rather than perceiving accurately." }
+    },
+    {
+      "optionId": "o3",
+      "label": "Assume you embarrassed yourself",
+      "description": "Withdraw and stop speaking for the rest of the meet-up.",
+      "ei": { "effectivenessScore": 1, "effectivenessLevel": "low", "rationale": "Self-focused interpretation biases perception; limited evidence." }
+    },
+    {
+      "optionId": "o4",
+      "label": "Demand reassurance",
+      "description": "Ask directly: 'Was that boring? Tell me honestly.'",
+      "ei": { "effectivenessScore": 0, "effectivenessLevel": "very_low", "rationale": "Adds pressure and threat; reduces accurate reading of emotion in the room." }
+    }
+  ]
+}
+

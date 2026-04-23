@@ -1,0 +1,43 @@
+{
+  "levelId": "level-22",
+  "title": "Choosing a Hard Conversation Time",
+  "branchPrimary": "Using Emotions to Facilitate Thinking",
+  "theme": "Timing and planning using emotion cues",
+  "culturalTags": ["communication", "timing", "planning", "India-adaptable"],
+  "scene": {
+    "background": { "type": "gradient", "value": "linear-gradient(135deg, rgba(21,19,33,1) 0%, rgba(8,8,14,1) 62%, rgba(5,5,8,1) 100%)" },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "uncertain"
+  },
+  "narrative": {
+    "context": "You need to have a difficult talk with a friend. You feel nervous and you notice they seem stressed today too.",
+    "prompt": "How do you use emotional information to choose the best approach?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Use both states to plan a calmer time",
+      "description": "Recognize mutual stress; propose a time when both can be calm and private, and prepare 2 key points.",
+      "ei": { "effectivenessScore": 3, "effectivenessLevel": "high", "rationale": "Uses emotional states to optimize timing and clarity—emotion guides effective planning." }
+    },
+    {
+      "optionId": "o2",
+      "label": "Bring it up quickly to get it over with",
+      "description": "Start the conversation immediately even if both feel tense.",
+      "ei": { "effectivenessScore": 2, "effectivenessLevel": "moderate", "rationale": "May reduce avoidance, but emotion is not used to improve conditions for good thinking and listening." }
+    },
+    {
+      "optionId": "o3",
+      "label": "Wait indefinitely until you feel 'perfect'",
+      "description": "Delay again and again because nerves persist.",
+      "ei": { "effectivenessScore": 1, "effectivenessLevel": "low", "rationale": "Anxiety blocks planning; emotion does not facilitate action." }
+    },
+    {
+      "optionId": "o4",
+      "label": "Send a long message at midnight",
+      "description": "Dump everything in text when emotions peak.",
+      "ei": { "effectivenessScore": 0, "effectivenessLevel": "very_low", "rationale": "Poor timing and unstructured emotion-driven communication reduce thinking quality." }
+    }
+  ]
+}
+

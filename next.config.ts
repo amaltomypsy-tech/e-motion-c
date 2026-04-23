@@ -1,0 +1,16 @@
+import type { NextConfig } from "next";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const nextConfig: NextConfig = {
+  reactStrictMode: true,
+  // Silences "inferred workspace root" warnings when multiple lockfiles exist outside the app folder.
+  outputFileTracingRoot: dirname,
+  // When opening the dev server via LAN IP, Next can consider _next assets "cross origin".
+  // Add explicit allowed origins for development LAN access.
+  allowedDevOrigins: ["http://localhost:3000", "http://127.0.0.1:3000", "http://10.51.111.35:3000"]
+};
+
+export default nextConfig;

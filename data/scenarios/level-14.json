@@ -1,0 +1,43 @@
+{
+  "levelId": "level-14",
+  "title": "Motivation Dip in Internship",
+  "branchPrimary": "Using Emotions to Facilitate Thinking",
+  "theme": "Using boredom/frustration for planning",
+  "culturalTags": ["internship", "motivation", "workplace", "India-adaptable"],
+  "scene": {
+    "background": { "type": "gradient", "value": "linear-gradient(135deg, rgba(21,19,33,1) 0%, rgba(8,8,14,1) 62%, rgba(5,5,8,1) 100%)" },
+    "ambientAudioSrc": "",
+    "avatarEmotionState": "drained"
+  },
+  "narrative": {
+    "context": "Your internship tasks feel repetitive. You feel bored and slightly frustrated, and your focus drops.",
+    "prompt": "How can you use these emotions to think and act more effectively?"
+  },
+  "options": [
+    {
+      "optionId": "o1",
+      "label": "Treat frustration as a signal to adjust strategy",
+      "description": "Identify what’s missing (challenge/clarity). Propose one improved task or learning goal to your mentor.",
+      "ei": { "effectivenessScore": 3, "effectivenessLevel": "high", "rationale": "Uses emotion as information for problem definition and goal planning—emotion facilitates thinking." }
+    },
+    {
+      "optionId": "o2",
+      "label": "Power through without reflection",
+      "description": "Finish tasks mechanically and hope motivation returns.",
+      "ei": { "effectivenessScore": 2, "effectivenessLevel": "moderate", "rationale": "Maintains output, but doesn’t use emotion to guide improved thinking or engagement." }
+    },
+    {
+      "optionId": "o3",
+      "label": "Complain to peers repeatedly",
+      "description": "Vent often, but don’t change your plan.",
+      "ei": { "effectivenessScore": 1, "effectivenessLevel": "low", "rationale": "Emotion becomes repetitive rumination; little cognitive benefit or planning." }
+    },
+    {
+      "optionId": "o4",
+      "label": "Quit impulsively",
+      "description": "Resign suddenly because it feels pointless.",
+      "ei": { "effectivenessScore": 0, "effectivenessLevel": "very_low", "rationale": "Emotion drives abrupt action without analysis; thinking is not facilitated." }
+    }
+  ]
+}
+
