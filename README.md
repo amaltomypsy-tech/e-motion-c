@@ -48,3 +48,25 @@ To store responses reliably across devices and restarts, use **MongoDB Atlas**:
    - `MONGODB_URI=mongodb+srv://<user>:<pass>@<cluster>/<db>?retryWrites=true&w=majority`
 
 With `MONGODB_URI` set, the app automatically switches from memory mode to MongoDB persistence.
+
+## Deploying from GitHub to Vercel
+
+This repo is already on GitHub, so the easiest way to get a public URL is with Vercel.
+
+1. Go to https://vercel.com and sign in with GitHub.
+2. Import the repo: `amaltomypsy-tech/e-motion-c`.
+3. In the Vercel project settings, add the environment variable:
+   - `MONGODB_URI`
+4. Deploy the project.
+
+After deployment, test the public API route:
+- `https://<your-vercel-project>.vercel.app/api/test`
+
+If MongoDB is connected correctly, the response should be:
+```json
+{"success":true,"message":"MongoDB connected successfully"}
+```
+
+### Notes
+- GitHub Pages cannot host this Next.js API route.
+- Vercel is the recommended host for this app because it supports Next.js serverless functions and environment variables.
