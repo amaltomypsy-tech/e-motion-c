@@ -4,3 +4,5 @@ node_modules
 ~$all_responses.xlsx
 npm-cache
 .npm-cache
+.next-dev.*.log
+Microsoft/

@@ -1,11 +1,10 @@
 import { v4 as uuidv4 } from "uuid";
-import { promises as fs } from "fs";
-import path from "path";
 
 import { connectToDatabase } from "@/lib/db";
 import { UserSession } from "@/models/UserSession";
 import { ScenarioResponse } from "@/models/ScenarioResponse";
 import { AssessmentReport } from "@/models/AssessmentReport";
+import scenarios from "@/data/scenarios.js";
 
 import type { ScenarioLevel } from "@/types/scenario";
 import type { AssessmentReportView } from "@/types/report";
@@ -47,6 +46,11 @@ export type SessionRecord = {
   avatarId?: string;
   demographics?: Demographics;
   scenarioOrder: string[];
+  startedAt?: Date;
+  lastUpdatedAt?: Date;
+  completedLevels?: string[];
+  totalScore?: number;
+  branchTotals?: Record<"perceiving" | "using" | "understanding" | "managing", number>;
   createdAt: Date;
   completedAt?: Date;
 };
@@ -55,9 +59,16 @@ export type ResponseRecord = {
   anonymousUserId: string;
   sessionId: string;
   levelId: string;
+  scenarioTitle?: string;
+  branch?: string;
   selectedOptionId: string;
+  selectedOptionText?: string;
+  score?: number;
+  branchScore?: Record<string, number>;
+  responseTimeMs?: number;
+  createdAt?: Date;
   branchPrimary: EIPrimaryBranch;
-  itemScore: 0 | 1 | 2 | 3;
+  itemScore: 0 | 1 | 2 | 3 | 4;
   eiLevel: "high" | "moderate" | "low" | "very_low";
   rationaleSnapshot?: string;
   latencyMs: number;
@@ -76,26 +87,12 @@ function hasMongo() {
 // Scenario helpers
 // -------------------------
 export async function loadScenarioOrder(): Promise<string[]> {
-  const dir = path.join(process.cwd(), "data", "scenarios");
-  const files = (await fs.readdir(dir)).filter((f) => f.endsWith(".json")).sort();
-  const order: string[] = [];
-  for (const f of files) {
-    const raw = await fs.readFile(path.join(dir, f), "utf8");
-    const parsed = JSON.parse(raw) as ScenarioLevel;
-    order.push(parsed.levelId);
-  }
-  return order;
+  return scenarios.map((scenario: any) => scenario.levelId);
 }
 
 export async function loadScenario(levelId: string): Promise<ScenarioLevel | null> {
-  const dir = path.join(process.cwd(), "data", "scenarios");
-  const files = (await fs.readdir(dir)).filter((f) => f.endsWith(".json"));
-  for (const f of files) {
-    const raw = await fs.readFile(path.join(dir, f), "utf8");
-    const parsed = JSON.parse(raw) as ScenarioLevel;
-    if (parsed.levelId === levelId) return parsed;
-  }
-  return null;
+  return (scenarios.find((scenario: any) => scenario.levelId === levelId || scenario.id === levelId) ??
+    null) as ScenarioLevel | null;
 }
 
 // -------------------------
@@ -144,7 +141,12 @@ export async function createSession(input: {
       ageGroup: input.ageGroup,
       avatarId: input.avatarId,
       demographics: input.demographics,
-      scenarioOrder
+      scenarioOrder,
+      startedAt: new Date(),
+      lastUpdatedAt: new Date(),
+      completedLevels: [],
+      totalScore: 0,
+      branchTotals: { perceiving: 0, using: 0, understanding: 0, managing: 0 }
     });
     return {
       anonymousUserId: session.anonymousUserId,
@@ -153,6 +155,11 @@ export async function createSession(input: {
       avatarId: session.avatarId ?? undefined,
       demographics: session.demographics ?? undefined,
       scenarioOrder: session.scenarioOrder,
+      startedAt: session.startedAt,
+      lastUpdatedAt: session.lastUpdatedAt,
+      completedLevels: session.completedLevels,
+      totalScore: session.totalScore,
+      branchTotals: session.branchTotals,
       createdAt: session.createdAt,
       completedAt: session.completedAt ?? undefined
     };
@@ -165,6 +172,11 @@ export async function createSession(input: {
     avatarId: input.avatarId,
     demographics: input.demographics,
     scenarioOrder,
+    startedAt: new Date(),
+    lastUpdatedAt: new Date(),
+    completedLevels: [],
+    totalScore: 0,
+    branchTotals: { perceiving: 0, using: 0, understanding: 0, managing: 0 },
     createdAt: new Date()
   };
   mem().sessions.set(sessionId, record);
@@ -211,6 +223,11 @@ export async function getSession(sessionId: string): Promise<SessionRecord | nul
       avatarId: s.avatarId ?? undefined,
       demographics: s.demographics ?? undefined,
       scenarioOrder: s.scenarioOrder ?? [],
+      startedAt: s.startedAt,
+      lastUpdatedAt: s.lastUpdatedAt,
+      completedLevels: s.completedLevels,
+      totalScore: s.totalScore,
+      branchTotals: s.branchTotals,
       createdAt: s.createdAt,
       completedAt: s.completedAt ?? undefined
     };
@@ -234,7 +251,7 @@ export async function listSessions(filter?: { sessionId?: string }) {
 }
 
 export async function saveResponse(input: {
-  anonymousUserId: string;
+  anonymousUserId?: string;
   sessionId: string;
   levelId: string;
   selectedOptionId: string;
@@ -248,6 +265,16 @@ export async function saveResponse(input: {
   if (!scenario) throw new Error("scenario_not_found");
 
   const scored = scoreSelectedOption(scenario, input.selectedOptionId);
+  const option = scenario.options.find((candidate) => candidate.optionId === input.selectedOptionId || candidate.id === input.selectedOptionId);
+  if (!option) throw new Error("option_not_found");
+  const selectedOptionText = option.text ?? option.description ?? option.label;
+  const itemScore = Math.min(4, option.score ?? scored.itemScore) as 0 | 1 | 2 | 3 | 4;
+  const branchScore = option.branchScore ?? {
+    perceiving: scenario.branchPrimary === "Perceiving Emotions" ? itemScore : 0,
+    using: scenario.branchPrimary === "Using Emotions to Facilitate Thinking" ? itemScore : 0,
+    understanding: scenario.branchPrimary === "Understanding Emotions" ? itemScore : 0,
+    managing: scenario.branchPrimary === "Managing Emotions" ? itemScore : 0
+  };
 
   if (hasMongo()) {
     await connectToDatabase();
@@ -263,22 +290,29 @@ export async function saveResponse(input: {
 
     const responseOrder = previous.length + 1;
     const cumulativeRawScore =
-      previous.reduce((sum, r) => sum + (r.itemScore ?? 0), 0) + scored.itemScore;
+      previous.reduce((sum, r) => sum + (r.itemScore ?? 0), 0) + itemScore;
 
     const branchRunningScore = initBranchScoreMap();
     const branchScores = computeBranchScores([
       ...previous.map((p) => ({ branchPrimary: p.branchPrimary, itemScore: p.itemScore })),
-      { branchPrimary: scenario.branchPrimary, itemScore: scored.itemScore }
+      { branchPrimary: scenario.branchPrimary, itemScore }
     ]);
     for (const [k, v] of Object.entries(branchScores)) (branchRunningScore as any)[k] = v;
 
     const doc = await ScenarioResponse.create({
-      anonymousUserId: input.anonymousUserId,
+      anonymousUserId: input.anonymousUserId ?? session.anonymousUserId,
       sessionId: input.sessionId,
       levelId: input.levelId,
+      scenarioTitle: scenario.title,
+      branch: scenario.branch ?? scenario.branchPrimary,
       selectedOptionId: input.selectedOptionId,
+      selectedOptionText,
+      score: itemScore,
+      branchScore,
+      responseTimeMs: input.latencyMs,
+      createdAt: new Date(),
       branchPrimary: scenario.branchPrimary,
-      itemScore: scored.itemScore,
+      itemScore,
       eiLevel: scored.eiLevel,
       rationaleSnapshot: scored.rationale,
       latencyMs: input.latencyMs,
@@ -287,6 +321,35 @@ export async function saveResponse(input: {
       cumulativeRawScore,
       branchRunningScore
     });
+
+    const previousSession = await UserSession.findOne({ sessionId: input.sessionId })
+      .select({ completedLevels: 1, totalScore: 1, branchTotals: 1 })
+      .lean();
+    const completedLevels = Array.from(
+      new Set([...(previousSession?.completedLevels ?? []), input.levelId])
+    );
+    const currentTotals = previousSession?.branchTotals ?? {
+      perceiving: 0,
+      using: 0,
+      understanding: 0,
+      managing: 0
+    };
+    await UserSession.updateOne(
+      { sessionId: input.sessionId },
+      {
+        $set: {
+          lastUpdatedAt: new Date(),
+          completedLevels,
+          totalScore: (previousSession?.totalScore ?? 0) + itemScore,
+          branchTotals: {
+            perceiving: (currentTotals.perceiving ?? 0) + (branchScore.perceiving ?? 0),
+            using: (currentTotals.using ?? 0) + (branchScore.using ?? 0),
+            understanding: (currentTotals.understanding ?? 0) + (branchScore.understanding ?? 0),
+            managing: (currentTotals.managing ?? 0) + (branchScore.managing ?? 0)
+          }
+        }
+      }
+    );
 
     if (responseOrder >= (session.scenarioOrder?.length ?? 0) && !session.completedAt) {
       await UserSession.updateOne({ sessionId: input.sessionId }, { $set: { completedAt: new Date() } });
@@ -301,22 +364,29 @@ export async function saveResponse(input: {
 
   const prev = store.responsesBySession.get(input.sessionId) ?? [];
   const responseOrder = prev.length + 1;
-  const cumulativeRawScore = prev.reduce((sum, r) => sum + (r.itemScore ?? 0), 0) + scored.itemScore;
+  const cumulativeRawScore = prev.reduce((sum, r) => sum + (r.itemScore ?? 0), 0) + itemScore;
 
   const branchRunningScore = initBranchScoreMap();
   const branchScores = computeBranchScores([
     ...prev.map((p) => ({ branchPrimary: p.branchPrimary, itemScore: p.itemScore })),
-    { branchPrimary: scenario.branchPrimary, itemScore: scored.itemScore }
+    { branchPrimary: scenario.branchPrimary, itemScore }
   ]);
   for (const [k, v] of Object.entries(branchScores)) (branchRunningScore as any)[k] = v;
 
   const rec: ResponseRecord = {
-    anonymousUserId: input.anonymousUserId,
+    anonymousUserId: input.anonymousUserId ?? session.anonymousUserId,
     sessionId: input.sessionId,
     levelId: input.levelId,
+    scenarioTitle: scenario.title,
+    branch: scenario.branch ?? scenario.branchPrimary,
     selectedOptionId: input.selectedOptionId,
+    selectedOptionText,
+    score: itemScore,
+    branchScore,
+    responseTimeMs: input.latencyMs,
+    createdAt: new Date(),
     branchPrimary: scenario.branchPrimary,
-    itemScore: scored.itemScore,
+    itemScore,
     eiLevel: scored.eiLevel,
     rationaleSnapshot: scored.rationale,
     latencyMs: input.latencyMs,
@@ -329,6 +399,15 @@ export async function saveResponse(input: {
 
   const next = [...prev, rec];
   store.responsesBySession.set(input.sessionId, next);
+  session.completedLevels = Array.from(new Set([...(session.completedLevels ?? []), input.levelId]));
+  session.totalScore = (session.totalScore ?? 0) + itemScore;
+  session.branchTotals = {
+    perceiving: (session.branchTotals?.perceiving ?? 0) + (branchScore.perceiving ?? 0),
+    using: (session.branchTotals?.using ?? 0) + (branchScore.using ?? 0),
+    understanding: (session.branchTotals?.understanding ?? 0) + (branchScore.understanding ?? 0),
+    managing: (session.branchTotals?.managing ?? 0) + (branchScore.managing ?? 0)
+  };
+  session.lastUpdatedAt = new Date();
 
   if (responseOrder >= (session.scenarioOrder?.length ?? 0) && !session.completedAt) {
     session.completedAt = new Date();

@@ -11,7 +11,7 @@ export interface ScenarioResponseInput {
 
 export interface ScenarioResponseRecord extends ScenarioResponseInput {
   branchPrimary: EIPrimaryBranch;
-  itemScore: 0 | 1 | 2 | 3;
+  itemScore: 0 | 1 | 2 | 3 | 4;
   eiLevel: EIEffectivenessLevel;
   rationaleSnapshot?: string;
   responseOrder: number;

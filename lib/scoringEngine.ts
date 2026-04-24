@@ -12,7 +12,7 @@ export const EI_BRANCHES: EIPrimaryBranch[] = [
 ];
 
 export function getMaxRawScore(levelCount: number) {
-  return Math.max(0, levelCount) * 3;
+  return Math.max(0, levelCount) * 4;
 }
 
 export function normalizeScore(raw: number, maxRaw: number, scaleMax = 100) {
@@ -27,7 +27,7 @@ export function scoreSelectedOption(scenario: ScenarioLevel, selectedOptionId: s
     throw new Error(`Option not found: ${selectedOptionId} in ${scenario.levelId}`);
   }
   return {
-    itemScore: option.ei.effectivenessScore,
+    itemScore: Math.min(4, option.score ?? option.ei.effectivenessScore),
     eiLevel: option.ei.effectivenessLevel as EIEffectivenessLevel,
     rationale: option.ei.rationale
   };

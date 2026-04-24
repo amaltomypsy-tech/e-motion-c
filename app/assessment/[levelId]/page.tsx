@@ -2,13 +2,14 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import ChoiceCard from "@/components/ChoiceCard.jsx";
+import ScenarioScene from "@/components/ScenarioScene.jsx";
 import type { ScenarioLevel } from "@/types/scenario";
-import { TransitionFade } from "@/components/cinematic/TransitionFade";
-import { ScenePlayer } from "@/components/cinematic/ScenePlayer";
-import { AvatarPanel } from "@/components/gameplay/AvatarPanel";
-import { DecisionCard } from "@/components/gameplay/DecisionCard";
-import { ProgressIndicator } from "@/components/gameplay/ProgressIndicator";
-import { Button } from "@/components/common/Button";
+
+function readStorage(key: string) {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(key) ?? sessionStorage.getItem(key.replace("ei.assessment.", ""));
+}
 
 export default function AssessmentLevelPage() {
   const router = useRouter();
@@ -19,27 +20,22 @@ export default function AssessmentLevelPage() {
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [changedCount, setChangedCount] = useState(0);
   const [submitting, setSubmitting] = useState(false);
-  const [audioEnabled, setAudioEnabled] = useState(false);
-  const startRef = useRef<number>(Date.now());
-
+  const [error, setError] = useState("");
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [anonymousUserId, setAnonymousUserId] = useState<string | null>(null);
-  const [avatarId, setAvatarId] = useState<string | undefined>(undefined);
   const [scenarioOrder, setScenarioOrder] = useState<string[]>([]);
+  const startRef = useRef<number>(Date.now());
 
   useEffect(() => {
-    const sid = typeof window !== "undefined" ? localStorage.getItem("ei.assessment.sessionId") : null;
-    const uid =
-      typeof window !== "undefined" ? localStorage.getItem("ei.assessment.anonymousUserId") : null;
-    const aid =
-      typeof window !== "undefined" ? localStorage.getItem("ei.assessment.avatarId") : null;
+    const sid = readStorage("ei.assessment.sessionId");
+    const uid = readStorage("ei.assessment.anonymousUserId");
     const orderRaw =
-      typeof window !== "undefined" ? localStorage.getItem("ei.assessment.scenarioOrder") : null;
+      typeof window !== "undefined"
+        ? localStorage.getItem("ei.assessment.scenarioOrder") ?? sessionStorage.getItem("scenarioOrder")
+        : null;
 
     setSessionId(sid);
     setAnonymousUserId(uid);
-    setAvatarId(aid ?? undefined);
-
     try {
       setScenarioOrder(orderRaw ? (JSON.parse(orderRaw) as string[]) : []);
     } catch {
@@ -47,144 +43,171 @@ export default function AssessmentLevelPage() {
     }
   }, []);
 
-  const progress = useMemo(() => {
-    const idx = scenarioOrder.findIndex((x) => x === levelId);
-    return { current: idx >= 0 ? idx + 1 : 1, total: scenarioOrder.length || 1 };
-  }, [scenarioOrder, levelId]);
-
   useEffect(() => {
     startRef.current = Date.now();
     setSelectedOptionId(null);
     setChangedCount(0);
+    setError("");
     (async () => {
-      const res = await fetch(`/api/scenarios?levelId=${encodeURIComponent(levelId)}`);
-      if (!res.ok) return;
-      const data = (await res.json()) as ScenarioLevel;
-      setScenario(data);
+      const response = await fetch(`/api/scenarios?levelId=${encodeURIComponent(levelId)}`);
+      if (!response.ok) {
+        setScenario(null);
+        setError("Scenario not found.");
+        return;
+      }
+      setScenario((await response.json()) as ScenarioLevel);
     })();
   }, [levelId]);
 
-  function pick(optionId: string) {
-    setSelectedOptionId((prev) => {
-      if (prev && prev !== optionId) setChangedCount((c) => c + 1);
-      return optionId;
+  const progress = useMemo(() => {
+    const total = scenarioOrder.length || 31;
+    const indexFromOrder = scenarioOrder.findIndex((item) => item === levelId);
+    const indexFromId = Number(levelId.replace("level-", "")) - 1;
+    const current = indexFromOrder >= 0 ? indexFromOrder + 1 : Number.isFinite(indexFromId) ? indexFromId + 1 : 1;
+    return { current, total };
+  }, [levelId, scenarioOrder]);
+
+  function pick(option: any) {
+    const nextId = option.optionId ?? option.id;
+    setSelectedOptionId((previous) => {
+      if (previous && previous !== nextId) setChangedCount((count) => count + 1);
+      return nextId;
     });
   }
 
   async function submit() {
-    if (!scenario || !selectedOptionId || !sessionId || !anonymousUserId) {
+    if (!scenario || !selectedOptionId) return;
+    if (!sessionId || !anonymousUserId) {
       router.push("/onboarding");
       return;
     }
 
     setSubmitting(true);
+    setError("");
+    const selected = scenario.options.find((option: any) => (option.optionId ?? option.id) === selectedOptionId);
+
     try {
-      const latencyMs = Date.now() - startRef.current;
-      const res = await fetch("/api/response", {
+      const response = await fetch("/api/response", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           anonymousUserId,
           sessionId,
           levelId: scenario.levelId,
+          scenarioTitle: scenario.title,
+          branch: scenario.branch ?? scenario.branchPrimary,
           selectedOptionId,
-          latencyMs,
+          selectedOptionText: selected?.text ?? selected?.description ?? selected?.label,
+          score: selected?.score ?? selected?.ei?.effectivenessScore,
+          branchScore: selected?.branchScore,
+          responseTimeMs: Date.now() - startRef.current,
+          latencyMs: Date.now() - startRef.current,
           changedSelectionCount: changedCount
         })
       });
-      if (!res.ok) throw new Error(`Save failed (${res.status})`);
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok && data?.error !== "already_answered") throw new Error(data?.error || "Save failed");
 
-      const currentIdx = scenarioOrder.findIndex((x) => x === scenario.levelId);
-      const nextId = currentIdx >= 0 ? scenarioOrder[currentIdx + 1] : null;
-      router.push(nextId ? `/assessment/${nextId}` : "/assessment/complete");
-    } catch {
-      // If save fails, keep the user on the screen to retry.
+      const currentIdx = scenarioOrder.findIndex((item) => item === scenario.levelId);
+      const numeric = Number(scenario.levelId.replace("level-", ""));
+      const nextId =
+        currentIdx >= 0
+          ? scenarioOrder[currentIdx + 1]
+          : numeric < 31
+            ? `level-${String(numeric + 1).padStart(2, "0")}`
+            : null;
+      router.push(nextId ? `/assessment/${nextId}` : `/assessment/complete?sessionId=${encodeURIComponent(sessionId)}`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not save response. Please try again.");
     } finally {
       setSubmitting(false);
     }
   }
 
-  if (!scenario) return <div className="text-sm text-white/60">Loading scenario…</div>;
-
-  return (
-    <TransitionFade>
-      <main className="min-h-[calc(100vh-4rem)]">
-        <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="space-y-5">
-            <ScenePlayer scene={scenario.scene} audioEnabled={audioEnabled} />
-
-            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                  <div className="text-xs uppercase tracking-[0.22em] text-white/60">
-                    {scenario.branchPrimary}
-                  </div>
-                  <h2 className="mt-2 text-2xl font-semibold">{scenario.title}</h2>
-                  <p className="mt-3 text-sm leading-relaxed text-white/70">
-                    {scenario.narrative.context}
-                  </p>
-                  <p className="mt-4 text-base font-medium text-white/90">{scenario.narrative.prompt}</p>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setAudioEnabled((v) => !v)}
-                    className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-xs text-white/70 hover:bg-white/[0.06]"
-                  >
-                    Sound: {audioEnabled ? "On" : "Off"}
-                  </button>
-                </div>
-              </div>
-
-              <div className="mt-6 grid gap-3">
-                {scenario.options.map((o) => (
-                  <DecisionCard
-                    key={o.optionId}
-                    title={o.label}
-                    description={o.description}
-                    selected={selectedOptionId === o.optionId}
-                    onClick={() => pick(o.optionId)}
-                  />
-                ))}
-              </div>
-
-              <div className="mt-6 flex items-center justify-end gap-3">
-                <Button variant="ghost" onClick={() => setSelectedOptionId(null)} disabled={submitting}>
-                  Clear
-                </Button>
-                <Button onClick={submit} disabled={!selectedOptionId || submitting}>
-                  {submitting ? "Submitting…" : "Submit choice"}
-                </Button>
-              </div>
-
-              <p className="mt-4 text-xs leading-relaxed text-white/55">
-                Scoring reflects EI effectiveness only (not morality, politeness, confidence, or sociability).
-              </p>
-            </div>
-          </div>
-
-          <div className="space-y-5">
-            <ProgressIndicator current={progress.current} total={progress.total} />
-            <AvatarPanel avatarId={avatarId} emotionState={scenario.scene.avatarEmotionState} />
-            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5">
-              <div className="text-xs uppercase tracking-[0.22em] text-white/60">Theme</div>
-              <div className="mt-2 text-sm text-white/80">{scenario.theme}</div>
-              <div className="mt-4 text-xs uppercase tracking-[0.22em] text-white/60">Cultural tags</div>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {scenario.culturalTags.map((t) => (
-                  <span
-                    key={t}
-                    className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-white/70"
-                  >
-                    {t}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
+  if (!scenario) {
+    return (
+      <main className="grid min-h-screen place-items-center bg-[#060711] px-5 text-white">
+        <div className="rounded-2xl border border-white/10 bg-white/[0.06] px-5 py-4 text-sm text-white/70">
+          {error || "Loading scenario..."}
         </div>
       </main>
-    </TransitionFade>
+    );
+  }
+
+  return (
+    <main className="min-h-screen bg-[#060711] px-4 py-5 text-white sm:px-6 lg:px-8">
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_18%_10%,rgba(34,211,238,0.16),transparent_30%),radial-gradient(circle_at_82%_0%,rgba(244,114,182,0.14),transparent_28%),linear-gradient(135deg,#060711,#101322_54%,#050507)]" />
+      <section className="relative z-10 mx-auto grid max-w-7xl gap-5 lg:grid-cols-[1.08fr_0.92fr]">
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-black/22 px-4 py-3 backdrop-blur">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.24em] text-white/45">
+                Level {String(progress.current).padStart(2, "0")} of {progress.total}
+              </p>
+              <div className="mt-2 h-2 w-48 overflow-hidden rounded-full bg-white/10">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-cyan-200 via-fuchsia-200 to-amber-200"
+                  style={{ width: `${Math.min(100, (progress.current / progress.total) * 100)}%` }}
+                />
+              </div>
+            </div>
+            <div className="rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-xs font-bold text-white/68">
+              {scenario.branch ?? scenario.branchPrimary}
+            </div>
+          </div>
+
+          <ScenarioScene
+            visualType={scenario.visualType}
+            title={scenario.title}
+            branch={scenario.branch ?? scenario.branchPrimary}
+            mood={scenario.mood ?? scenario.scene?.avatarEmotionState ?? "reflective"}
+            setting={scenario.setting ?? scenario.theme}
+          />
+
+          <div className="rounded-2xl border border-white/10 bg-black/28 p-5 backdrop-blur">
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-cyan-100/60">Story context</p>
+            <p className="mt-3 text-base leading-8 text-slate-100/82">{scenario.story ?? scenario.narrative.context}</p>
+            <h1 className="mt-5 text-2xl font-black leading-tight text-white sm:text-3xl">{scenario.prompt ?? scenario.narrative.prompt}</h1>
+          </div>
+        </div>
+
+        <aside className="rounded-[1.25rem] border border-white/10 bg-white/[0.055] p-4 shadow-2xl backdrop-blur sm:p-5 lg:sticky lg:top-5 lg:self-start">
+          <div className="mb-4">
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-fuchsia-100/58">Choose response</p>
+            <p className="mt-2 text-sm leading-6 text-white/58">Select the option you would stand behind in this scene.</p>
+          </div>
+          <div className="grid gap-3">
+            {scenario.options.map((option: any, index) => {
+              const id = option.optionId ?? option.id;
+              return (
+                <ChoiceCard
+                  key={id}
+                  option={option}
+                  index={index}
+                  selected={selectedOptionId === id}
+                  disabled={submitting}
+                  onSelect={pick}
+                />
+              );
+            })}
+          </div>
+
+          {error ? (
+            <div className="mt-4 rounded-2xl border border-red-300/25 bg-red-500/12 px-4 py-3 text-sm text-red-100">
+              {error}
+            </div>
+          ) : null}
+
+          <button
+            type="button"
+            onClick={submit}
+            disabled={!selectedOptionId || submitting}
+            className="mt-5 w-full rounded-2xl bg-white px-5 py-4 text-sm font-black uppercase tracking-[0.12em] text-slate-950 transition hover:bg-cyan-100 disabled:cursor-not-allowed disabled:opacity-45"
+          >
+            {submitting ? "Saving response..." : progress.current >= 31 ? "Submit final response" : "Submit and continue"}
+          </button>
+        </aside>
+      </section>
+    </main>
   );
 }

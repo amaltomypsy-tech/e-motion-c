@@ -6,7 +6,7 @@
       "DOM.Iterable",
       "ES2022"
     ],
-    "allowJs": false,
+    "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
@@ -31,6 +31,9 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
+    "app/**/*.js",
+    "components/**/*.jsx",
+    "data/**/*.js",
     "next-env.d.ts",
     ".next/types/**/*.ts"
   ],

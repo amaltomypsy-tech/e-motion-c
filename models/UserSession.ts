@@ -22,6 +22,16 @@ export interface IUserSession {
     additionalNotes?: string;
   };
   scenarioOrder: string[];
+  startedAt?: Date;
+  lastUpdatedAt?: Date;
+  completedLevels?: string[];
+  totalScore?: number;
+  branchTotals?: {
+    perceiving: number;
+    using: number;
+    understanding: number;
+    managing: number;
+  };
   createdAt: Date;
   completedAt?: Date;
 }
@@ -52,10 +62,19 @@ const UserSessionSchema = new Schema<IUserSession>(
     avatarId: { type: String, required: false },
     demographics: { type: DemographicsSchema, required: false },
     scenarioOrder: { type: [String], required: true, default: [] },
+    startedAt: { type: Date, required: true, default: Date.now },
+    lastUpdatedAt: { type: Date, required: true, default: Date.now },
+    completedLevels: { type: [String], required: true, default: [] },
+    totalScore: { type: Number, required: true, default: 0 },
+    branchTotals: {
+      type: Schema.Types.Mixed,
+      required: true,
+      default: { perceiving: 0, using: 0, understanding: 0, managing: 0 }
+    },
     createdAt: { type: Date, required: true, default: Date.now },
     completedAt: { type: Date, required: false }
   },
-  { collection: "user_sessions" }
+  { collection: "sessions" }
 );
 
 export const UserSession =

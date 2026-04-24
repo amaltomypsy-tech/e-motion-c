@@ -5,9 +5,16 @@ export interface IScenarioResponse {
   anonymousUserId: string;
   sessionId: string;
   levelId: string;
+  scenarioTitle?: string;
+  branch?: string;
   selectedOptionId: string;
+  selectedOptionText?: string;
+  score?: number;
+  branchScore?: Record<string, number>;
+  responseTimeMs?: number;
+  createdAt?: Date;
   branchPrimary: EIPrimaryBranch;
-  itemScore: 0 | 1 | 2 | 3;
+  itemScore: 0 | 1 | 2 | 3 | 4;
   eiLevel: EIEffectivenessLevel;
   rationaleSnapshot?: string;
   latencyMs: number;
@@ -23,9 +30,16 @@ const ScenarioResponseSchema = new Schema<IScenarioResponse>(
     anonymousUserId: { type: String, required: true, index: true },
     sessionId: { type: String, required: true, index: true },
     levelId: { type: String, required: true, index: true },
+    scenarioTitle: { type: String, required: false },
+    branch: { type: String, required: false },
     selectedOptionId: { type: String, required: true },
+    selectedOptionText: { type: String, required: false },
+    score: { type: Number, required: false, min: 0, max: 4 },
+    branchScore: { type: Schema.Types.Mixed, required: false },
+    responseTimeMs: { type: Number, required: false },
+    createdAt: { type: Date, required: true, default: Date.now },
     branchPrimary: { type: String, required: true },
-    itemScore: { type: Number, required: true, min: 0, max: 3 },
+    itemScore: { type: Number, required: true, min: 0, max: 4 },
     eiLevel: { type: String, required: true },
     rationaleSnapshot: { type: String, required: false },
     latencyMs: { type: Number, required: true },
@@ -35,7 +49,7 @@ const ScenarioResponseSchema = new Schema<IScenarioResponse>(
     cumulativeRawScore: { type: Number, required: true },
     branchRunningScore: { type: Schema.Types.Mixed, required: true }
   },
-  { collection: "scenario_responses" }
+  { collection: "responses" }
 );
 
 ScenarioResponseSchema.index({ sessionId: 1, responseOrder: 1 }, { unique: true });

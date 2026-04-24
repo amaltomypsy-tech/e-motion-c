@@ -16,20 +16,37 @@ export interface SceneMetadata {
 }
 
 export interface ScenarioOption {
+  id?: string;
   optionId: string;
   label: string;
   description: string;
+  text?: string;
+  score?: number;
+  branchScore?: {
+    perceiving: number;
+    using: number;
+    understanding: number;
+    managing: number;
+  };
   ei: {
-    effectivenessScore: 0 | 1 | 2 | 3;
+    effectivenessScore: 0 | 1 | 2 | 3 | 4;
     effectivenessLevel: EIEffectivenessLevel;
     rationale: string; // explicit psychometric rationale tied to EI effectiveness
   };
 }
 
 export interface ScenarioLevel {
+  id?: string;
   levelId: string;
   title: string;
   branchPrimary: EIPrimaryBranch;
+  branch?: string;
+  sceneImage?: string;
+  mood?: string;
+  setting?: string;
+  story?: string;
+  prompt?: string;
+  visualType?: string;
   theme: string;
   culturalTags: string[];
   scene: SceneMetadata;
@@ -39,4 +56,3 @@ export interface ScenarioLevel {
   };
   options: ScenarioOption[]; // 3–4 options
 }
-

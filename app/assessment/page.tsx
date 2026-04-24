@@ -10,8 +10,9 @@ export default function AssessmentIndexPage() {
   const [firstLevelId, setFirstLevelId] = useState<string | null>(null);
 
   useEffect(() => {
-    const sessionId = localStorage.getItem("ei.assessment.sessionId");
-    const scenarioOrderRaw = localStorage.getItem("ei.assessment.scenarioOrder");
+    const sessionId = localStorage.getItem("ei.assessment.sessionId") ?? sessionStorage.getItem("sessionId");
+    const scenarioOrderRaw =
+      localStorage.getItem("ei.assessment.scenarioOrder") ?? sessionStorage.getItem("scenarioOrder");
     if (!sessionId || !scenarioOrderRaw) {
       router.push("/onboarding");
       return;
@@ -46,4 +47,3 @@ export default function AssessmentIndexPage() {
     </main>
   );
 }
-

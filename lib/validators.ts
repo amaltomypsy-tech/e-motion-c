@@ -10,9 +10,16 @@ export const CreateSessionSchema = z.object({
     .object({
       participantName: z.string().min(1).max(200).optional(),
       ageYears: z.number().int().min(18).max(27).optional(),
-      gender: z.enum(["Male", "Female"]).optional(),
+      gender: z.enum(["Male", "Female", "Other", "Prefer not to say"]).optional(),
       residenceArea: z.enum(["Urban", "Rural"]).optional(),
-      state: z.string().min(1).max(120).optional()
+      educationLevel: z.string().min(1).max(120).optional(),
+      city: z.string().min(1).max(120).optional(),
+      state: z.string().min(1).max(120).optional(),
+      country: z.string().min(1).max(120).optional(),
+      primaryLanguage: z.string().min(1).max(120).optional(),
+      institutionType: z.string().min(1).max(120).optional(),
+      socioeconomicStatus: z.string().min(1).max(120).optional(),
+      additionalNotes: z.string().max(600).optional()
     })
     .optional()
 });
@@ -24,7 +31,7 @@ export const UpdateSessionSchema = z.object({
     .object({
       participantName: z.string().min(1).max(200).optional(),
       ageYears: z.number().int().min(18).max(27).optional(),
-      gender: z.enum(["Male", "Female"]).optional(),
+      gender: z.enum(["Male", "Female", "Other", "Prefer not to say"]).optional(),
       residenceArea: z.enum(["Urban", "Rural"]).optional(),
       educationLevel: z.string().min(1).max(120).optional(),
       city: z.string().min(1).max(120).optional(),
