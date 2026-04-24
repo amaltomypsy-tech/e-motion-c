@@ -1,11 +1,5 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI as string;
-
-if (!MONGODB_URI) {
-  throw new Error("Please define MONGODB_URI in .env.local");
-}
-
 interface CachedConnection {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
@@ -37,12 +31,17 @@ function withConnectTimeout<T>(promise: Promise<T>) {
 }
 
 async function connectDB() {
+  const mongoUri = process.env.MONGODB_URI;
+  if (!mongoUri) {
+    throw new Error("Please define MONGODB_URI in .env.local or Vercel environment variables");
+  }
+
   if (cached!.conn) {
     return cached!.conn;
   }
 
   if (!cached!.promise) {
-    cached!.promise = mongoose.connect(MONGODB_URI, {
+    cached!.promise = mongoose.connect(mongoUri, {
       bufferCommands: false,
       serverSelectionTimeoutMS: MONGO_CONNECT_TIMEOUT_MS,
       connectTimeoutMS: MONGO_CONNECT_TIMEOUT_MS,
