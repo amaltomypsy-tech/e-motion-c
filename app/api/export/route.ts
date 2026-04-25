@@ -28,6 +28,19 @@ function userTypeFor(age: unknown) {
   return typeof age === "number" && age >= 17 && age <= 27 ? "target_sample" : "non_target_sample";
 }
 
+function csvCell(value: unknown) {
+  const text = safe(value);
+  if (/[",\r\n]/.test(text)) return `"${text.replace(/"/g, '""')}"`;
+  return text;
+}
+
+function toCsv(rows: Record<string, unknown>[], headers: string[]) {
+  return [
+    headers.join(","),
+    ...rows.map((row) => headers.map((header) => csvCell(row[header])).join(","))
+  ].join("\r\n");
+}
+
 export async function GET(req: Request) {
   const guard = requireExportKey(req);
   if (!guard.ok) {
@@ -36,6 +49,7 @@ export async function GET(req: Request) {
 
   const url = new URL(req.url);
   const sessionId = url.searchParams.get("sessionId");
+  const format = url.searchParams.get("format")?.toLowerCase();
 
   const sessions = await listSessions(sessionId ? { sessionId } : undefined);
 
@@ -50,6 +64,82 @@ export async function GET(req: Request) {
 
   const reports = await listReports(sessionId ? { sessionId } : undefined);
   const sessionById = new Map((sessions as any[]).map((s) => [s.sessionId, s]));
+
+  const responseRows = responses.map((r: any) => {
+    const branchScore = r.branchScore ?? {};
+    const s: any = sessionById.get(r.sessionId) ?? {};
+    return {
+      sessionId: safe(r.sessionId),
+      participant_id: safe(r.participant_id ?? s.participant_id ?? r.sessionId),
+      participant_name: safe(s.participant_name ?? s.demographics?.participantName ?? "Anonymous"),
+      is_anonymous: s.is_anonymous ?? !(s.participant_name ?? s.demographics?.participantName),
+      age: s.age ?? s.demographics?.ageYears ?? "",
+      gender: safe(s.gender ?? s.demographics?.gender),
+      education: safe(s.education ?? s.demographics?.educationLevel),
+      userType: safe(s.userType ?? userTypeFor(s.age ?? s.demographics?.ageYears)),
+      anonymousUserId: safe(r.anonymousUserId),
+      responseOrder: r.responseOrder ?? "",
+      level_id: safe(r.levelId),
+      chapter: r.chapter ?? "",
+      title: safe(r.scenarioTitle),
+      branch: safe(r.branch ?? r.branchPrimary),
+      branchPrimary: safe(r.branchPrimary),
+      selected_option_id: safe(r.selectedOptionId),
+      selected_option_text: safe(r.selectedOptionText),
+      selected_option_description: safe(r.selectedOptionDescription),
+      adaptiveLevel: safe(r.adaptiveLevel),
+      score: r.score ?? r.itemScore ?? "",
+      branchScore_perceiving: branchScore.perceiving ?? "",
+      branchScore_using: branchScore.using ?? "",
+      branchScore_understanding: branchScore.understanding ?? "",
+      branchScore_managing: branchScore.managing ?? "",
+      eiLevel: safe(r.eiLevel),
+      responseTimeMs: r.responseTimeMs ?? r.latencyMs ?? "",
+      timestamp: r.createdAt ? new Date(r.createdAt).toISOString() : "",
+      cumulativeRawScore: r.cumulativeRawScore ?? "",
+      rationaleSnapshot: safe(r.rationaleSnapshot)
+    };
+  });
+
+  if (format === "csv") {
+    const headers = [
+      "sessionId",
+      "participant_id",
+      "participant_name",
+      "is_anonymous",
+      "age",
+      "gender",
+      "education",
+      "userType",
+      "anonymousUserId",
+      "responseOrder",
+      "level_id",
+      "chapter",
+      "title",
+      "branch",
+      "branchPrimary",
+      "selected_option_id",
+      "selected_option_text",
+      "selected_option_description",
+      "adaptiveLevel",
+      "score",
+      "branchScore_perceiving",
+      "branchScore_using",
+      "branchScore_understanding",
+      "branchScore_managing",
+      "eiLevel",
+      "responseTimeMs",
+      "timestamp",
+      "cumulativeRawScore",
+      "rationaleSnapshot"
+    ];
+    return new Response(toCsv(responseRows, headers), {
+      headers: {
+        "content-type": "text/csv; charset=utf-8",
+        "content-disposition": `attachment; filename="ei_assessment_responses${sessionId ? `_${sessionId}` : ""}_${isMongoEnabled() ? "mongo" : "memory"}.csv"`
+      }
+    });
+  }
 
   const wb = new ExcelJS.Workbook();
   wb.creator = "EI Story Assessment";
