@@ -5,10 +5,20 @@ export interface IScenarioResponse {
   anonymousUserId: string;
   sessionId: string;
   participant_id?: string;
+  participant_name?: string;
+  age?: number;
   levelId: string;
   chapter?: number;
   scenarioTitle?: string;
   branch?: string;
+  displayedOptionOrder?: string[];
+  displayed_option_order?: string[];
+  selectedDisplayPosition?: number;
+  selected_display_position?: number;
+  originalOptionId?: string;
+  original_option_id?: string;
+  originalOptionText?: string;
+  original_option_text?: string;
   selectedOptionId: string;
   selectedOptionText?: string;
   selectedOptionDescription?: string;
@@ -34,10 +44,20 @@ const ScenarioResponseSchema = new Schema<IScenarioResponse>(
     anonymousUserId: { type: String, required: true, index: true },
     sessionId: { type: String, required: true, index: true },
     participant_id: { type: String, required: false, index: true },
+    participant_name: { type: String, required: false },
+    age: { type: Number, required: false },
     levelId: { type: String, required: true, index: true },
     chapter: { type: Number, required: false },
     scenarioTitle: { type: String, required: false },
     branch: { type: String, required: false },
+    displayedOptionOrder: { type: [String], required: false },
+    displayed_option_order: { type: [String], required: false },
+    selectedDisplayPosition: { type: Number, required: false, min: 1, max: 4 },
+    selected_display_position: { type: Number, required: false, min: 1, max: 4 },
+    originalOptionId: { type: String, required: false },
+    original_option_id: { type: String, required: false },
+    originalOptionText: { type: String, required: false },
+    original_option_text: { type: String, required: false },
     selectedOptionId: { type: String, required: true },
     selectedOptionText: { type: String, required: false },
     selectedOptionDescription: { type: String, required: false },

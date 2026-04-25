@@ -67,10 +67,20 @@ export type ResponseRecord = {
   anonymousUserId: string;
   sessionId: string;
   participant_id?: string;
+  participant_name?: string;
+  age?: number;
   levelId: string;
   chapter?: number;
   scenarioTitle?: string;
   branch?: string;
+  displayedOptionOrder?: string[];
+  displayed_option_order?: string[];
+  selectedDisplayPosition?: number;
+  selected_display_position?: number;
+  originalOptionId?: string;
+  original_option_id?: string;
+  originalOptionText?: string;
+  original_option_text?: string;
   selectedOptionId: string;
   selectedOptionText?: string;
   selectedOptionDescription?: string;
@@ -328,6 +338,10 @@ export async function saveResponse(input: {
   sessionId: string;
   levelId: string;
   selectedOptionId: string;
+  displayedOptionOrder?: string[];
+  selectedDisplayPosition?: number;
+  originalOptionId?: string;
+  originalOptionText?: string;
   latencyMs: number;
   changedSelectionCount: number;
 }): Promise<ResponseRecord> {
@@ -340,7 +354,17 @@ export async function saveResponse(input: {
   const scored = scoreSelectedOption(scenario, input.selectedOptionId);
   const option = scenario.options.find((candidate) => candidate.optionId === input.selectedOptionId || candidate.id === input.selectedOptionId);
   if (!option) throw new Error("option_not_found");
-  const selectedOptionText = option.label ?? option.text ?? option.description;
+  const displayedOptionOrder =
+    input.displayedOptionOrder?.length
+      ? input.displayedOptionOrder
+      : scenario.display_order ?? scenario.displayed_option_order ?? scenario.options.map((candidate: any) => candidate.optionId ?? candidate.id);
+  const selectedDisplayPosition =
+    input.selectedDisplayPosition && input.selectedDisplayPosition > 0
+      ? input.selectedDisplayPosition
+      : displayedOptionOrder.indexOf(input.selectedOptionId) + 1;
+  const originalOptionId = input.originalOptionId ?? option.original_option_id ?? option.optionId ?? option.id;
+  const originalOptionText = input.originalOptionText ?? option.original_text ?? option.text ?? option.label ?? option.description;
+  const selectedOptionText = originalOptionText ?? option.label ?? option.text ?? option.description;
   const selectedOptionDescription = option.description ?? option.text ?? option.label;
   const itemScore = Math.min(4, option.score ?? scored.itemScore) as 0 | 1 | 2 | 3 | 4;
   const branchScore = option.branchScore ?? {
@@ -377,10 +401,20 @@ export async function saveResponse(input: {
       anonymousUserId: input.anonymousUserId ?? session.anonymousUserId,
       sessionId: input.sessionId,
       participant_id: session.participant_id,
+      participant_name: session.participant_name,
+      age: session.age,
       levelId: input.levelId,
       chapter: scenario.chapter,
-      scenarioTitle: scenario.title,
+      scenarioTitle: scenario.scene_title ?? scenario.title,
       branch: scenario.branch ?? scenario.branchPrimary,
+      displayedOptionOrder,
+      displayed_option_order: displayedOptionOrder,
+      selectedDisplayPosition,
+      selected_display_position: selectedDisplayPosition,
+      originalOptionId,
+      original_option_id: originalOptionId,
+      originalOptionText,
+      original_option_text: originalOptionText,
       selectedOptionId: input.selectedOptionId,
       selectedOptionText,
       selectedOptionDescription,
@@ -455,10 +489,20 @@ export async function saveResponse(input: {
     anonymousUserId: input.anonymousUserId ?? session.anonymousUserId,
     sessionId: input.sessionId,
     participant_id: session.participant_id,
+    participant_name: session.participant_name,
+    age: session.age,
     levelId: input.levelId,
     chapter: scenario.chapter,
-    scenarioTitle: scenario.title,
+    scenarioTitle: scenario.scene_title ?? scenario.title,
     branch: scenario.branch ?? scenario.branchPrimary,
+    displayedOptionOrder,
+    displayed_option_order: displayedOptionOrder,
+    selectedDisplayPosition,
+    selected_display_position: selectedDisplayPosition,
+    originalOptionId,
+    original_option_id: originalOptionId,
+    originalOptionText,
+    original_option_text: originalOptionText,
     selectedOptionId: input.selectedOptionId,
     selectedOptionText,
     selectedOptionDescription,

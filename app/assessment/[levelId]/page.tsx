@@ -11,11 +11,16 @@ function readStorage(key: string) {
   return localStorage.getItem(key) ?? sessionStorage.getItem(key.replace("ei.assessment.", ""));
 }
 
+function optionOrder(scenario: ScenarioLevel) {
+  return scenario.display_order ?? scenario.displayed_option_order ?? scenario.options.map((option: any) => option.optionId ?? option.id);
+}
+
 function saveLocalResponse(scenario: ScenarioLevel, selected: any, selectedOptionId: string, sessionId: string) {
   if (typeof window === "undefined") return;
   const key = `ei.assessment.responses.${sessionId}`;
   const existing = JSON.parse(localStorage.getItem(key) ?? "[]");
   const withoutCurrent = existing.filter((response: any) => response.level_id !== scenario.levelId);
+  const displayedOptionOrder = optionOrder(scenario);
   withoutCurrent.push({
     participant_id: localStorage.getItem("ei.assessment.participant_id") ?? sessionId,
     participant_name: localStorage.getItem("ei.assessment.participant_name") ?? "Anonymous",
@@ -24,12 +29,17 @@ function saveLocalResponse(scenario: ScenarioLevel, selected: any, selectedOptio
     userType: localStorage.getItem("ei.assessment.userType") ?? "non_target_sample",
     level_id: scenario.levelId,
     chapter: scenario.chapter,
-    title: scenario.title,
+    title: scenario.scene_title ?? scenario.title,
+    scene_title: scenario.scene_title ?? scenario.title,
     branch: scenario.branch ?? scenario.branchPrimary,
+    displayed_option_order: displayedOptionOrder,
+    selected_display_position: displayedOptionOrder.indexOf(selectedOptionId) + 1,
     selected_option_id: selectedOptionId,
-    selected_option_text: selected?.label ?? selected?.text ?? selected?.description,
+    original_option_id: selected?.original_option_id ?? selectedOptionId,
+    original_option_text: selected?.original_text ?? selected?.label ?? selected?.text ?? selected?.description,
+    selected_option_text: selected?.original_text ?? selected?.label ?? selected?.text ?? selected?.description,
     selected_option_description: selected?.description ?? selected?.text ?? selected?.label,
-    score: selected?.score ?? selected?.ei?.effectivenessScore,
+    score: selected?.score_value ?? selected?.score ?? selected?.ei?.effectivenessScore,
     adaptiveLevel: selected?.adaptiveLevel,
     timestamp: new Date().toISOString()
   });
@@ -74,7 +84,14 @@ export default function AssessmentLevelPage() {
     setChangedCount(0);
     setError("");
     (async () => {
-      const response = await fetch(`/api/scenarios?levelId=${encodeURIComponent(levelId)}`);
+      const sid =
+        typeof window !== "undefined"
+          ? localStorage.getItem("ei.assessment.sessionId") ?? sessionStorage.getItem("sessionId")
+          : null;
+      const query = sid
+        ? `/api/scenarios?levelId=${encodeURIComponent(levelId)}&sessionId=${encodeURIComponent(sid)}`
+        : `/api/scenarios?levelId=${encodeURIComponent(levelId)}`;
+      const response = await fetch(query);
       if (!response.ok) {
         setScenario(null);
         setError("Scenario not found.");
@@ -110,6 +127,7 @@ export default function AssessmentLevelPage() {
     setSubmitting(true);
     setError("");
     const selected = scenario.options.find((option: any) => (option.optionId ?? option.id) === selectedOptionId);
+    const displayedOptionOrder = optionOrder(scenario);
     saveLocalResponse(scenario, selected, selectedOptionId, sessionId);
 
     try {
@@ -120,11 +138,15 @@ export default function AssessmentLevelPage() {
           anonymousUserId,
           sessionId,
           levelId: scenario.levelId,
-          scenarioTitle: scenario.title,
+          scenarioTitle: scenario.scene_title ?? scenario.title,
           branch: scenario.branch ?? scenario.branchPrimary,
+          displayedOptionOrder,
+          selectedDisplayPosition: displayedOptionOrder.indexOf(selectedOptionId) + 1,
           selectedOptionId,
-          selectedOptionText: selected?.text ?? selected?.description ?? selected?.label,
-          score: selected?.score ?? selected?.ei?.effectivenessScore,
+          originalOptionId: selected?.original_option_id ?? selectedOptionId,
+          originalOptionText: selected?.original_text ?? selected?.text ?? selected?.description ?? selected?.label,
+          selectedOptionText: selected?.original_text ?? selected?.text ?? selected?.description ?? selected?.label,
+          score: selected?.score_value ?? selected?.score ?? selected?.ei?.effectivenessScore,
           branchScore: selected?.branchScore,
           responseTimeMs: Date.now() - startRef.current,
           latencyMs: Date.now() - startRef.current,

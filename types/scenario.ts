@@ -13,16 +13,25 @@ export interface SceneMetadata {
   };
   ambientAudioSrc?: string; // public path (e.g. "/audio/ambient-01.mp3")
   avatarEmotionState?: string; // short label used for UI only; NOT scored
+  visualSetting?: string;
+  emotionalTone?: string;
+  avatarReaction?: string;
+  animationHint?: string;
+  soundCue?: string;
 }
 
 export interface ScenarioOption {
   id?: string;
   optionId: string;
+  original_option_id?: string;
+  original_text?: string;
   label: string;
   description: string;
   adaptiveLevel?: string;
   text?: string;
   score?: number;
+  score_value?: number;
+  branch?: EIPrimaryBranch;
   branchScore?: {
     perceiving: number;
     using: number;
@@ -37,13 +46,25 @@ export interface ScenarioOption {
 }
 
 export interface ScenarioLevel {
+  level?: number;
   id?: string;
   levelId: string;
   chapter?: number;
+  scene_title?: string;
   title: string;
   branchPrimary: EIPrimaryBranch;
   branch?: string;
+  EI_branch?: EIPrimaryBranch;
   branchShort?: string;
+  scenario?: string;
+  player_state?: string;
+  visual_setting?: string;
+  emotional_tone?: string;
+  avatar_reaction?: string;
+  animation_hint?: string;
+  sound_cue?: string;
+  display_order?: string[];
+  displayed_option_order?: string[];
   sceneTone?: string;
   context?: string;
   sceneImage?: string;
@@ -58,6 +79,7 @@ export interface ScenarioLevel {
   narrative: {
     context: string;
     prompt: string;
+    playerInternalState?: string;
   };
   options: ScenarioOption[]; // 3–4 options
 }
