@@ -1,10 +1,18 @@
 import mongoose, { Schema } from "mongoose";
 
-export type AgeGroup = "18-21" | "22-24" | "25-27";
+export type AgeGroup = "17-21" | "22-24" | "25-27" | "non-target";
+export type UserType = "target_sample" | "non_target_sample";
 
 export interface IUserSession {
   anonymousUserId: string;
   sessionId: string;
+  participant_id: string;
+  participant_name: string;
+  is_anonymous: boolean;
+  age?: number;
+  gender?: string;
+  education?: string;
+  userType: UserType;
   ageGroup: AgeGroup;
   avatarId?: string;
   demographics?: {
@@ -39,7 +47,7 @@ export interface IUserSession {
 const DemographicsSchema = new Schema(
   {
     participantName: { type: String, required: false },
-    ageYears: { type: Number, required: false, min: 18, max: 27 },
+    ageYears: { type: Number, required: false, min: 0, max: 120 },
     gender: { type: String, required: false },
     residenceArea: { type: String, required: false, enum: ["Urban", "Rural"] },
     educationLevel: { type: String, required: false },
@@ -58,6 +66,13 @@ const UserSessionSchema = new Schema<IUserSession>(
   {
     anonymousUserId: { type: String, required: true, index: true },
     sessionId: { type: String, required: true, unique: true, index: true },
+    participant_id: { type: String, required: true, unique: true, index: true },
+    participant_name: { type: String, required: true, default: "Anonymous" },
+    is_anonymous: { type: Boolean, required: true, default: true },
+    age: { type: Number, required: false, min: 0, max: 120 },
+    gender: { type: String, required: false },
+    education: { type: String, required: false },
+    userType: { type: String, required: true, enum: ["target_sample", "non_target_sample"], default: "non_target_sample" },
     ageGroup: { type: String, required: true },
     avatarId: { type: String, required: false },
     demographics: { type: DemographicsSchema, required: false },

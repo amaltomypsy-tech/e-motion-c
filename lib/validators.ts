@@ -1,16 +1,21 @@
 import { z } from "zod";
 
-export const AgeGroupSchema = z.enum(["18-21", "22-24", "25-27"]);
+export const AgeGroupSchema = z.enum(["17-21", "18-21", "22-24", "25-27", "non-target"]);
 
 export const CreateSessionSchema = z.object({
-  ageGroup: AgeGroupSchema,
+  name: z.string().max(200).optional(),
+  age: z.coerce.number().int().min(0).max(120).optional(),
+  gender: z.string().max(120).optional(),
+  education: z.string().max(120).optional(),
+  is_anonymous: z.boolean().optional(),
+  ageGroup: AgeGroupSchema.optional(),
   anonymousUserId: z.string().min(8).optional(),
   avatarId: z.string().min(1).optional(),
   demographics: z
     .object({
       participantName: z.string().min(1).max(200).optional(),
-      ageYears: z.number().int().min(18).max(27).optional(),
-      gender: z.enum(["Male", "Female", "Other", "Prefer not to say"]).optional(),
+      ageYears: z.coerce.number().int().min(0).max(120).optional(),
+      gender: z.string().max(120).optional(),
       residenceArea: z.enum(["Urban", "Rural"]).optional(),
       educationLevel: z.string().min(1).max(120).optional(),
       city: z.string().min(1).max(120).optional(),
@@ -30,8 +35,8 @@ export const UpdateSessionSchema = z.object({
   demographics: z
     .object({
       participantName: z.string().min(1).max(200).optional(),
-      ageYears: z.number().int().min(18).max(27).optional(),
-      gender: z.enum(["Male", "Female", "Other", "Prefer not to say"]).optional(),
+      ageYears: z.coerce.number().int().min(0).max(120).optional(),
+      gender: z.string().max(120).optional(),
       residenceArea: z.enum(["Urban", "Rural"]).optional(),
       educationLevel: z.string().min(1).max(120).optional(),
       city: z.string().min(1).max(120).optional(),

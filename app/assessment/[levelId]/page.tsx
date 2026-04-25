@@ -11,6 +11,31 @@ function readStorage(key: string) {
   return localStorage.getItem(key) ?? sessionStorage.getItem(key.replace("ei.assessment.", ""));
 }
 
+function saveLocalResponse(scenario: ScenarioLevel, selected: any, selectedOptionId: string, sessionId: string) {
+  if (typeof window === "undefined") return;
+  const key = `ei.assessment.responses.${sessionId}`;
+  const existing = JSON.parse(localStorage.getItem(key) ?? "[]");
+  const withoutCurrent = existing.filter((response: any) => response.level_id !== scenario.levelId);
+  withoutCurrent.push({
+    participant_id: localStorage.getItem("ei.assessment.participant_id") ?? sessionId,
+    participant_name: localStorage.getItem("ei.assessment.participant_name") ?? "Anonymous",
+    is_anonymous: localStorage.getItem("ei.assessment.is_anonymous") === "true",
+    age: Number(localStorage.getItem("ei.assessment.age") ?? 0),
+    userType: localStorage.getItem("ei.assessment.userType") ?? "non_target_sample",
+    level_id: scenario.levelId,
+    chapter: scenario.chapter,
+    title: scenario.title,
+    branch: scenario.branch ?? scenario.branchPrimary,
+    selected_option_id: selectedOptionId,
+    selected_option_text: selected?.label ?? selected?.text ?? selected?.description,
+    selected_option_description: selected?.description ?? selected?.text ?? selected?.label,
+    score: selected?.score ?? selected?.ei?.effectivenessScore,
+    adaptiveLevel: selected?.adaptiveLevel,
+    timestamp: new Date().toISOString()
+  });
+  localStorage.setItem(key, JSON.stringify(withoutCurrent));
+}
+
 export default function AssessmentLevelPage() {
   const router = useRouter();
   const params = useParams<{ levelId: string }>();
@@ -85,6 +110,7 @@ export default function AssessmentLevelPage() {
     setSubmitting(true);
     setError("");
     const selected = scenario.options.find((option: any) => (option.optionId ?? option.id) === selectedOptionId);
+    saveLocalResponse(scenario, selected, selectedOptionId, sessionId);
 
     try {
       const response = await fetch("/api/response", {
@@ -107,7 +133,10 @@ export default function AssessmentLevelPage() {
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok && data?.error !== "already_answered") throw new Error(data?.error || "Save failed");
-
+    } catch (err) {
+      setError(err instanceof Error ? `Saved locally. Server sync failed: ${err.message}` : "Saved locally. Server sync failed.");
+    } finally {
+      setSubmitting(false);
       const currentIdx = scenarioOrder.findIndex((item) => item === scenario.levelId);
       const numeric = Number(scenario.levelId.replace("level-", ""));
       const nextId =
@@ -116,11 +145,14 @@ export default function AssessmentLevelPage() {
           : numeric < 31
             ? `level-${String(numeric + 1).padStart(2, "0")}`
             : null;
+      if (!nextId) {
+        fetch("/api/session/complete", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ sessionId })
+        }).catch(() => undefined);
+      }
       router.push(nextId ? `/assessment/${nextId}` : `/assessment/complete?sessionId=${encodeURIComponent(sessionId)}`);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not save response. Please try again.");
-    } finally {
-      setSubmitting(false);
     }
   }
 
@@ -152,21 +184,21 @@ export default function AssessmentLevelPage() {
               </div>
             </div>
             <div className="rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-xs font-bold text-white/68">
-              {scenario.branch ?? scenario.branchPrimary}
+              {scenario.branchShort ?? scenario.branch ?? scenario.branchPrimary}
             </div>
           </div>
 
           <ScenarioScene
             visualType={scenario.visualType}
             title={scenario.title}
-            branch={scenario.branch ?? scenario.branchPrimary}
-            mood={scenario.mood ?? scenario.scene?.avatarEmotionState ?? "reflective"}
+            branch={scenario.branchShort ?? scenario.branch ?? scenario.branchPrimary}
+            mood={scenario.sceneTone ?? scenario.mood ?? scenario.scene?.avatarEmotionState ?? "reflective"}
             setting={scenario.setting ?? scenario.theme}
           />
 
           <div className="rounded-2xl border border-white/10 bg-black/28 p-5 backdrop-blur">
             <p className="text-xs font-black uppercase tracking-[0.24em] text-cyan-100/60">Story context</p>
-            <p className="mt-3 text-base leading-8 text-slate-100/82">{scenario.story ?? scenario.narrative.context}</p>
+            <p className="mt-3 text-base leading-8 text-slate-100/82">{scenario.context ?? scenario.story ?? scenario.narrative.context}</p>
             <h1 className="mt-5 text-2xl font-black leading-tight text-white sm:text-3xl">{scenario.prompt ?? scenario.narrative.prompt}</h1>
           </div>
         </div>

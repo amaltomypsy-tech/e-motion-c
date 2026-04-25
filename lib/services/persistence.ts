@@ -22,7 +22,8 @@ import {
 } from "@/lib/scoringEngine";
 import { buildBranchScoreSummaries, buildInterpretation } from "@/lib/reportEngine";
 
-export type AgeGroup = "18-21" | "22-24" | "25-27";
+export type AgeGroup = "17-21" | "18-21" | "22-24" | "25-27" | "non-target";
+export type UserType = "target_sample" | "non_target_sample";
 
 export type Demographics = {
   participantName?: string;
@@ -42,6 +43,13 @@ export type Demographics = {
 export type SessionRecord = {
   anonymousUserId: string;
   sessionId: string;
+  participant_id: string;
+  participant_name: string;
+  is_anonymous: boolean;
+  age?: number;
+  gender?: string;
+  education?: string;
+  userType: UserType;
   ageGroup: AgeGroup;
   avatarId?: string;
   demographics?: Demographics;
@@ -58,11 +66,15 @@ export type SessionRecord = {
 export type ResponseRecord = {
   anonymousUserId: string;
   sessionId: string;
+  participant_id?: string;
   levelId: string;
+  chapter?: number;
   scenarioTitle?: string;
   branch?: string;
   selectedOptionId: string;
   selectedOptionText?: string;
+  selectedOptionDescription?: string;
+  adaptiveLevel?: string;
   score?: number;
   branchScore?: Record<string, number>;
   responseTimeMs?: number;
@@ -81,6 +93,10 @@ export type ResponseRecord = {
 
 function hasMongo() {
   return Boolean(process.env.MONGODB_URI);
+}
+
+function userTypeForAge(age: unknown): UserType {
+  return typeof age === "number" && age >= 17 && age <= 27 ? "target_sample" : "non_target_sample";
 }
 
 // -------------------------
@@ -124,23 +140,59 @@ function mem(): MemoryStore {
 // Public persistence API
 // -------------------------
 export async function createSession(input: {
-  ageGroup: AgeGroup;
+  name?: string;
+  age?: number;
+  gender?: string;
+  education?: string;
+  is_anonymous?: boolean;
+  ageGroup?: AgeGroup;
   anonymousUserId?: string;
   avatarId?: string;
   demographics?: Demographics;
 }): Promise<SessionRecord> {
   const anonymousUserId = input.anonymousUserId ?? uuidv4();
-  const sessionId = uuidv4();
+  const participant_id = uuidv4();
+  const sessionId = participant_id;
   const scenarioOrder = await loadScenarioOrder();
+  const participant_name =
+    input.name?.trim() ||
+    input.demographics?.participantName?.trim() ||
+    "Anonymous";
+  const is_anonymous = participant_name === "Anonymous";
+  const age = input.age ?? input.demographics?.ageYears;
+  const userType: UserType = typeof age === "number" && age >= 17 && age <= 27 ? "target_sample" : "non_target_sample";
+  const ageGroup: AgeGroup =
+    input.ageGroup ??
+    (userType === "non_target_sample"
+      ? "non-target"
+      : (age ?? 17) <= 21
+        ? "17-21"
+        : (age ?? 17) <= 24
+          ? "22-24"
+          : "25-27");
+  const demographics = {
+    ...(input.demographics ?? {}),
+    participantName: participant_name,
+    ageYears: age,
+    gender: input.gender ?? input.demographics?.gender,
+    educationLevel: input.education ?? input.demographics?.educationLevel
+  };
 
   if (hasMongo()) {
     await connectToDatabase();
     const session = await UserSession.create({
       anonymousUserId,
       sessionId,
-      ageGroup: input.ageGroup,
+      participant_id,
+      participant_name,
+      is_anonymous,
+      age,
+      gender: demographics.gender,
+      education: demographics.educationLevel,
+      userType,
+      ageGroup,
       avatarId: input.avatarId,
-      demographics: input.demographics,
+      demographics,
       scenarioOrder,
       startedAt: new Date(),
       lastUpdatedAt: new Date(),
@@ -151,6 +203,13 @@ export async function createSession(input: {
     return {
       anonymousUserId: session.anonymousUserId,
       sessionId: session.sessionId,
+      participant_id: session.participant_id,
+      participant_name: session.participant_name,
+      is_anonymous: session.is_anonymous,
+      age: session.age,
+      gender: session.gender,
+      education: session.education,
+      userType: session.userType,
       ageGroup: session.ageGroup as AgeGroup,
       avatarId: session.avatarId ?? undefined,
       demographics: session.demographics ?? undefined,
@@ -168,9 +227,16 @@ export async function createSession(input: {
   const record: SessionRecord = {
     anonymousUserId,
     sessionId,
-    ageGroup: input.ageGroup,
+    participant_id,
+    participant_name,
+    is_anonymous,
+    age,
+    gender: demographics.gender,
+    education: demographics.educationLevel,
+    userType,
+    ageGroup,
     avatarId: input.avatarId,
-    demographics: input.demographics,
+    demographics,
     scenarioOrder,
     startedAt: new Date(),
     lastUpdatedAt: new Date(),
@@ -219,6 +285,13 @@ export async function getSession(sessionId: string): Promise<SessionRecord | nul
     return {
       anonymousUserId: s.anonymousUserId,
       sessionId: s.sessionId,
+      participant_id: s.participant_id ?? s.sessionId,
+      participant_name: s.participant_name ?? s.demographics?.participantName ?? "Anonymous",
+      is_anonymous: s.is_anonymous ?? !(s.participant_name ?? s.demographics?.participantName),
+      age: s.age ?? s.demographics?.ageYears,
+      gender: s.gender ?? s.demographics?.gender,
+      education: s.education ?? s.demographics?.educationLevel,
+      userType: s.userType ?? userTypeForAge(s.age ?? s.demographics?.ageYears),
       ageGroup: s.ageGroup as AgeGroup,
       avatarId: s.avatarId ?? undefined,
       demographics: s.demographics ?? undefined,
@@ -267,7 +340,8 @@ export async function saveResponse(input: {
   const scored = scoreSelectedOption(scenario, input.selectedOptionId);
   const option = scenario.options.find((candidate) => candidate.optionId === input.selectedOptionId || candidate.id === input.selectedOptionId);
   if (!option) throw new Error("option_not_found");
-  const selectedOptionText = option.text ?? option.description ?? option.label;
+  const selectedOptionText = option.label ?? option.text ?? option.description;
+  const selectedOptionDescription = option.description ?? option.text ?? option.label;
   const itemScore = Math.min(4, option.score ?? scored.itemScore) as 0 | 1 | 2 | 3 | 4;
   const branchScore = option.branchScore ?? {
     perceiving: scenario.branchPrimary === "Perceiving Emotions" ? itemScore : 0,
@@ -302,11 +376,15 @@ export async function saveResponse(input: {
     const doc = await ScenarioResponse.create({
       anonymousUserId: input.anonymousUserId ?? session.anonymousUserId,
       sessionId: input.sessionId,
+      participant_id: session.participant_id,
       levelId: input.levelId,
+      chapter: scenario.chapter,
       scenarioTitle: scenario.title,
       branch: scenario.branch ?? scenario.branchPrimary,
       selectedOptionId: input.selectedOptionId,
       selectedOptionText,
+      selectedOptionDescription,
+      adaptiveLevel: option.adaptiveLevel,
       score: itemScore,
       branchScore,
       responseTimeMs: input.latencyMs,
@@ -376,11 +454,15 @@ export async function saveResponse(input: {
   const rec: ResponseRecord = {
     anonymousUserId: input.anonymousUserId ?? session.anonymousUserId,
     sessionId: input.sessionId,
+    participant_id: session.participant_id,
     levelId: input.levelId,
+    chapter: scenario.chapter,
     scenarioTitle: scenario.title,
     branch: scenario.branch ?? scenario.branchPrimary,
     selectedOptionId: input.selectedOptionId,
     selectedOptionText,
+    selectedOptionDescription,
+    adaptiveLevel: option.adaptiveLevel,
     score: itemScore,
     branchScore,
     responseTimeMs: input.latencyMs,
@@ -427,6 +509,27 @@ export async function listResponses(filter: { sessionId: string }) {
   return mem().responsesBySession.get(filter.sessionId) ?? [];
 }
 
+export async function completeSession(sessionId: string): Promise<SessionRecord | null> {
+  const completedAt = new Date();
+  if (hasMongo()) {
+    await connectToDatabase();
+    const updated = await UserSession.findOneAndUpdate(
+      { sessionId },
+      { $set: { completedAt, lastUpdatedAt: completedAt } },
+      { new: true }
+    ).lean();
+    if (!updated) return null;
+    return getSession(sessionId);
+  }
+
+  const session = mem().sessions.get(sessionId);
+  if (!session) return null;
+  session.completedAt = completedAt;
+  session.lastUpdatedAt = completedAt;
+  mem().sessions.set(sessionId, session);
+  return session;
+}
+
 export async function getOrCreateReport(input: {
   anonymousUserId: string;
   sessionId: string;
@@ -461,7 +564,7 @@ export async function getOrCreateReport(input: {
     const b = r.branchPrimary as EIPrimaryBranch;
     counts[b] += 1;
   }
-  for (const b of Object.keys(counts) as EIPrimaryBranch[]) branchMaxRaw[b] = counts[b] * 3;
+  for (const b of Object.keys(counts) as EIPrimaryBranch[]) branchMaxRaw[b] = counts[b] * 4;
 
   const branchScores = buildBranchScoreSummaries({ branchRawScores, branchMaxRaw });
   const responseConsistencyIndex = computeConsistencyIndex(responses as any);

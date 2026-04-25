@@ -20,6 +20,7 @@ export interface ScenarioOption {
   optionId: string;
   label: string;
   description: string;
+  adaptiveLevel?: string;
   text?: string;
   score?: number;
   branchScore?: {
@@ -38,9 +39,13 @@ export interface ScenarioOption {
 export interface ScenarioLevel {
   id?: string;
   levelId: string;
+  chapter?: number;
   title: string;
   branchPrimary: EIPrimaryBranch;
   branch?: string;
+  branchShort?: string;
+  sceneTone?: string;
+  context?: string;
   sceneImage?: string;
   mood?: string;
   setting?: string;

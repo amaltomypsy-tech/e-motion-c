@@ -10,6 +10,13 @@ const branchLabels = {
   managing: "Managing Emotions"
 };
 
+const branchShortToKey = {
+  "Perceiving Emotions": "perceiving",
+  "Using Emotions to Facilitate Thinking": "using",
+  "Understanding Emotions": "understanding",
+  "Managing Emotions": "managing"
+};
+
 function interpretation(strongest, growth) {
   return `Your response pattern is strongest in ${branchLabels[strongest]}, suggesting this branch was most available during the story moments. ${branchLabels[growth]} appears to be the main development edge, which means future practice can focus on slowing down, reading context, and choosing emotion-informed action when pressure rises.`;
 }
@@ -39,7 +46,41 @@ export default function ResultsPage() {
         if (!response.ok) throw new Error(data?.error || "Could not load results");
         setPayload(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Could not load results");
+        const localResponses = JSON.parse(localStorage.getItem(`ei.assessment.responses.${sessionId}`) ?? "[]");
+        if (localResponses.length) {
+          const totals = { perceiving: 0, using: 0, understanding: 0, managing: 0 };
+          for (const response of localResponses) {
+            const key = branchShortToKey[response.branch] ?? "perceiving";
+            totals[key] += response.score ?? 0;
+          }
+          setPayload({
+            session: {
+              sessionId,
+              participant_id: localStorage.getItem("ei.assessment.participant_id") ?? sessionId,
+              participant_name: localStorage.getItem("ei.assessment.participant_name") ?? "Anonymous",
+              is_anonymous: localStorage.getItem("ei.assessment.is_anonymous") === "true",
+              age: Number(localStorage.getItem("ei.assessment.age") ?? 0),
+              userType: localStorage.getItem("ei.assessment.userType") ?? "non_target_sample",
+              completedLevels: localResponses.map((response) => response.level_id),
+              totalScore: localResponses.reduce((sum, response) => sum + (response.score ?? 0), 0),
+              branchTotals: totals
+            },
+            responses: localResponses.map((response) => ({
+              levelId: response.level_id,
+              scenarioTitle: response.title,
+              branch: response.branch,
+              selectedOptionId: response.selected_option_id,
+              selectedOptionText: response.selected_option_text,
+              selectedOptionDescription: response.selected_option_description,
+              adaptiveLevel: response.adaptiveLevel,
+              score: response.score,
+              createdAt: response.timestamp
+            })),
+            persistence: "local"
+          });
+        } else {
+          setError(err instanceof Error ? err.message : "Could not load results");
+        }
       } finally {
         setLoading(false);
       }
@@ -80,6 +121,8 @@ export default function ResultsPage() {
   const totalScore = payload.session.totalScore ?? 0;
   const maxScore = Math.max(1, completed * 4);
   const normalized = Math.round((totalScore / maxScore) * 100);
+  const userType = payload.session.userType ?? "non_target_sample";
+  const isTargetSample = userType === "target_sample";
 
   return (
     <main className="min-h-screen bg-[#060711] px-4 py-8 text-white sm:px-6">
@@ -89,7 +132,9 @@ export default function ResultsPage() {
           <p className="text-xs font-black uppercase tracking-[0.28em] text-cyan-100/60">Research summary</p>
           <h1 className="mt-3 text-4xl font-black sm:text-6xl">Your EI Story Profile</h1>
           <p className="mt-4 max-w-3xl text-base leading-7 text-slate-100/70">
-            This is a non-diagnostic profile generated from the response documents saved for this session.
+            {isTargetSample
+              ? "This is a non-diagnostic, research-style profile generated from the response documents saved for this session."
+              : "This experience is designed and validated primarily for individuals aged 17-27. Your results are shown for general insight and may not reflect standardized interpretation."}
           </p>
         </div>
 
@@ -126,23 +171,34 @@ export default function ResultsPage() {
           </div>
         </div>
 
-        <div className="mt-5 grid gap-5 lg:grid-cols-2">
-          <div className="rounded-[1.25rem] border border-emerald-200/15 bg-emerald-300/8 p-6">
-            <p className="text-sm font-bold uppercase tracking-[0.2em] text-emerald-100/55">Strongest branch</p>
-            <h2 className="mt-2 text-2xl font-black">{branchLabels[summary.strongest]}</h2>
+        {isTargetSample ? (
+          <div className="mt-5 grid gap-5 lg:grid-cols-2">
+            <div className="rounded-[1.25rem] border border-emerald-200/15 bg-emerald-300/8 p-6">
+              <p className="text-sm font-bold uppercase tracking-[0.2em] text-emerald-100/55">Strongest branch</p>
+              <h2 className="mt-2 text-2xl font-black">{branchLabels[summary.strongest]}</h2>
+            </div>
+            <div className="rounded-[1.25rem] border border-amber-200/15 bg-amber-300/8 p-6">
+              <p className="text-sm font-bold uppercase tracking-[0.2em] text-amber-100/55">Development focus</p>
+              <h2 className="mt-2 text-2xl font-black">{branchLabels[summary.growth]}</h2>
+            </div>
           </div>
-          <div className="rounded-[1.25rem] border border-amber-200/15 bg-amber-300/8 p-6">
-            <p className="text-sm font-bold uppercase tracking-[0.2em] text-amber-100/55">Development focus</p>
-            <h2 className="mt-2 text-2xl font-black">{branchLabels[summary.growth]}</h2>
-          </div>
-        </div>
+        ) : null}
 
-        <div className="mt-5 rounded-[1.25rem] border border-white/10 bg-white/[0.055] p-6">
-          <h2 className="text-2xl font-black">Interpretation</h2>
-          <p className="mt-3 max-w-4xl text-base leading-8 text-slate-100/72">
-            {interpretation(summary.strongest, summary.growth)}
-          </p>
-        </div>
+        {isTargetSample ? (
+          <div className="mt-5 rounded-[1.25rem] border border-white/10 bg-white/[0.055] p-6">
+            <h2 className="text-2xl font-black">Interpretation</h2>
+            <p className="mt-3 max-w-4xl text-base leading-8 text-slate-100/72">
+              {interpretation(summary.strongest, summary.growth)}
+            </p>
+          </div>
+        ) : (
+          <div className="mt-5 rounded-[1.25rem] border border-white/10 bg-white/[0.055] p-6">
+            <h2 className="text-2xl font-black">General insight only</h2>
+            <p className="mt-3 max-w-4xl text-base leading-8 text-slate-100/72">
+              This experience is designed and validated primarily for individuals aged 17-27. Your results are shown for general insight and may not reflect standardized interpretation.
+            </p>
+          </div>
+        )}
 
         <div className="mt-5 rounded-[1.25rem] border border-white/10 bg-black/24 p-5 backdrop-blur">
           <h2 className="text-2xl font-black">Selected responses</h2>

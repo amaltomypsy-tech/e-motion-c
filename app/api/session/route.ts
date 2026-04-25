@@ -16,6 +16,11 @@ export async function POST(req: Request) {
 
   try {
     const session = await createSession({
+      name: parsed.data.name,
+      age: parsed.data.age,
+      gender: parsed.data.gender,
+      education: parsed.data.education,
+      is_anonymous: parsed.data.is_anonymous,
       ageGroup: parsed.data.ageGroup,
       anonymousUserId: parsed.data.anonymousUserId,
       avatarId: parsed.data.avatarId,
@@ -23,6 +28,13 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({
+      participant_id: session.participant_id,
+      participant_name: session.participant_name,
+      is_anonymous: session.is_anonymous,
+      age: session.age,
+      gender: session.gender,
+      education: session.education,
+      userType: session.userType,
       anonymousUserId: session.anonymousUserId,
       sessionId: session.sessionId,
       ageGroup: session.ageGroup,

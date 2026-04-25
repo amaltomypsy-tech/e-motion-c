@@ -24,6 +24,10 @@ function safe(v: unknown) {
   return String(v);
 }
 
+function userTypeFor(age: unknown) {
+  return typeof age === "number" && age >= 17 && age <= 27 ? "target_sample" : "non_target_sample";
+}
+
 export async function GET(req: Request) {
   const guard = requireExportKey(req);
   if (!guard.ok) {
@@ -45,6 +49,7 @@ export async function GET(req: Request) {
       ).flat();
 
   const reports = await listReports(sessionId ? { sessionId } : undefined);
+  const sessionById = new Map((sessions as any[]).map((s) => [s.sessionId, s]));
 
   const wb = new ExcelJS.Workbook();
   wb.creator = "EI Story Assessment";
@@ -54,6 +59,13 @@ export async function GET(req: Request) {
   const wsSessions = wb.addWorksheet("Sessions");
   wsSessions.columns = [
     { header: "sessionId", key: "sessionId", width: 38 },
+    { header: "participant_id", key: "participant_id", width: 38 },
+    { header: "participant_name", key: "participant_name", width: 24 },
+    { header: "is_anonymous", key: "is_anonymous", width: 14 },
+    { header: "age", key: "age", width: 10 },
+    { header: "gender", key: "gender", width: 14 },
+    { header: "education", key: "education", width: 18 },
+    { header: "userType", key: "userType", width: 18 },
     { header: "anonymousUserId", key: "anonymousUserId", width: 38 },
     { header: "ageGroup", key: "ageGroup", width: 10 },
     { header: "avatarId", key: "avatarId", width: 14 },
@@ -69,9 +81,9 @@ export async function GET(req: Request) {
     { header: "branchTotal_managing", key: "branchTotal_managing", width: 20 },
     { header: "participantName", key: "participantName", width: 22 },
     { header: "ageYears", key: "ageYears", width: 10 },
-    { header: "gender", key: "gender", width: 14 },
+    { header: "demographic_gender", key: "demographic_gender", width: 18 },
     { header: "residenceArea", key: "residenceArea", width: 14 },
-    { header: "educationLevel", key: "educationLevel", width: 18 },
+    { header: "demographic_educationLevel", key: "demographic_educationLevel", width: 26 },
     { header: "city", key: "city", width: 18 },
     { header: "state", key: "state", width: 18 },
     { header: "country", key: "country", width: 14 },
@@ -84,6 +96,13 @@ export async function GET(req: Request) {
   for (const s of sessions) {
     wsSessions.addRow({
       sessionId: safe(s.sessionId),
+      participant_id: safe(s.participant_id ?? s.sessionId),
+      participant_name: safe(s.participant_name ?? s.demographics?.participantName ?? "Anonymous"),
+      is_anonymous: s.is_anonymous ?? !(s.participant_name ?? s.demographics?.participantName),
+      age: s.age ?? s.demographics?.ageYears ?? "",
+      gender: safe(s.gender ?? s.demographics?.gender),
+      education: safe(s.education ?? s.demographics?.educationLevel),
+      userType: safe(s.userType ?? userTypeFor(s.age ?? s.demographics?.ageYears)),
       anonymousUserId: safe(s.anonymousUserId),
       ageGroup: safe(s.ageGroup),
       avatarId: safe(s.avatarId),
@@ -99,9 +118,9 @@ export async function GET(req: Request) {
       branchTotal_managing: s.branchTotals?.managing ?? "",
       participantName: safe(s.demographics?.participantName),
       ageYears: s.demographics?.ageYears ?? "",
-      gender: safe(s.demographics?.gender),
+      demographic_gender: safe(s.demographics?.gender),
       residenceArea: safe(s.demographics?.residenceArea),
-      educationLevel: safe(s.demographics?.educationLevel),
+      demographic_educationLevel: safe(s.demographics?.educationLevel),
       city: safe(s.demographics?.city),
       state: safe(s.demographics?.state),
       country: safe(s.demographics?.country),
@@ -116,14 +135,24 @@ export async function GET(req: Request) {
   const wsResponses = wb.addWorksheet("Responses");
   wsResponses.columns = [
     { header: "sessionId", key: "sessionId", width: 38 },
+    { header: "participant_id", key: "participant_id", width: 38 },
+    { header: "participant_name", key: "participant_name", width: 24 },
+    { header: "is_anonymous", key: "is_anonymous", width: 14 },
+    { header: "age", key: "age", width: 10 },
+    { header: "gender", key: "gender", width: 14 },
+    { header: "education", key: "education", width: 18 },
+    { header: "userType", key: "userType", width: 18 },
     { header: "anonymousUserId", key: "anonymousUserId", width: 38 },
     { header: "responseOrder", key: "responseOrder", width: 12 },
-    { header: "levelId", key: "levelId", width: 14 },
-    { header: "scenarioTitle", key: "scenarioTitle", width: 28 },
+    { header: "level_id", key: "levelId", width: 14 },
+    { header: "chapter", key: "chapter", width: 10 },
+    { header: "title", key: "scenarioTitle", width: 28 },
     { header: "branch", key: "branch", width: 34 },
     { header: "branchPrimary", key: "branchPrimary", width: 34 },
-    { header: "selectedOptionId", key: "selectedOptionId", width: 14 },
-    { header: "selectedOptionText", key: "selectedOptionText", width: 62 },
+    { header: "selected_option_id", key: "selectedOptionId", width: 18 },
+    { header: "selected_option_text", key: "selectedOptionText", width: 62 },
+    { header: "selected_option_description", key: "selectedOptionDescription", width: 72 },
+    { header: "adaptiveLevel", key: "adaptiveLevel", width: 20 },
     { header: "score", key: "score", width: 10 },
     { header: "itemScore_legacy", key: "itemScore", width: 14 },
     { header: "branchScore_perceiving", key: "branchScore_perceiving", width: 22 },
@@ -134,7 +163,7 @@ export async function GET(req: Request) {
     { header: "responseTimeMs", key: "responseTimeMs", width: 16 },
     { header: "latencyMs_legacy", key: "latencyMs", width: 16 },
     { header: "changedSelectionCount", key: "changedSelectionCount", width: 20 },
-    { header: "createdAt", key: "createdAt", width: 22 },
+    { header: "timestamp", key: "createdAt", width: 22 },
     { header: "timestamp_legacy", key: "timestamp", width: 22 },
     { header: "cumulativeRawScore", key: "cumulativeRawScore", width: 18 },
     { header: "rationaleSnapshot", key: "rationaleSnapshot", width: 46 }
@@ -142,16 +171,27 @@ export async function GET(req: Request) {
 
   for (const r of responses) {
     const branchScore = r.branchScore ?? {};
+    const s: any = sessionById.get(r.sessionId) ?? {};
     wsResponses.addRow({
       sessionId: safe(r.sessionId),
+      participant_id: safe(r.participant_id ?? s.participant_id ?? r.sessionId),
+      participant_name: safe(s.participant_name ?? s.demographics?.participantName ?? "Anonymous"),
+      is_anonymous: s.is_anonymous ?? !(s.participant_name ?? s.demographics?.participantName),
+      age: s.age ?? s.demographics?.ageYears ?? "",
+      gender: safe(s.gender ?? s.demographics?.gender),
+      education: safe(s.education ?? s.demographics?.educationLevel),
+      userType: safe(s.userType ?? userTypeFor(s.age ?? s.demographics?.ageYears)),
       anonymousUserId: safe(r.anonymousUserId),
       responseOrder: r.responseOrder ?? "",
       levelId: safe(r.levelId),
+      chapter: r.chapter ?? "",
       scenarioTitle: safe(r.scenarioTitle),
       branch: safe(r.branch ?? r.branchPrimary),
       branchPrimary: safe(r.branchPrimary),
       selectedOptionId: safe(r.selectedOptionId),
       selectedOptionText: safe(r.selectedOptionText),
+      selectedOptionDescription: safe(r.selectedOptionDescription),
+      adaptiveLevel: safe(r.adaptiveLevel),
       score: r.score ?? r.itemScore ?? "",
       itemScore: r.itemScore ?? "",
       branchScore_perceiving: branchScore.perceiving ?? "",

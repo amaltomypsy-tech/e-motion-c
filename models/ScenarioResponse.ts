@@ -4,11 +4,15 @@ import type { EIPrimaryBranch, EIEffectivenessLevel } from "@/types/scenario";
 export interface IScenarioResponse {
   anonymousUserId: string;
   sessionId: string;
+  participant_id?: string;
   levelId: string;
+  chapter?: number;
   scenarioTitle?: string;
   branch?: string;
   selectedOptionId: string;
   selectedOptionText?: string;
+  selectedOptionDescription?: string;
+  adaptiveLevel?: string;
   score?: number;
   branchScore?: Record<string, number>;
   responseTimeMs?: number;
@@ -29,11 +33,15 @@ const ScenarioResponseSchema = new Schema<IScenarioResponse>(
   {
     anonymousUserId: { type: String, required: true, index: true },
     sessionId: { type: String, required: true, index: true },
+    participant_id: { type: String, required: false, index: true },
     levelId: { type: String, required: true, index: true },
+    chapter: { type: Number, required: false },
     scenarioTitle: { type: String, required: false },
     branch: { type: String, required: false },
     selectedOptionId: { type: String, required: true },
     selectedOptionText: { type: String, required: false },
+    selectedOptionDescription: { type: String, required: false },
+    adaptiveLevel: { type: String, required: false },
     score: { type: Number, required: false, min: 0, max: 4 },
     branchScore: { type: Schema.Types.Mixed, required: false },
     responseTimeMs: { type: Number, required: false },

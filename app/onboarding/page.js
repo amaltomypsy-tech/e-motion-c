@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import scenarios from "@/data/scenarios.js";
 
 const avatars = [
   { id: "calm-listener", icon: "CL", label: "Calm Listener" },
@@ -11,18 +12,20 @@ const avatars = [
 ];
 
 const genderOptions = ["Male", "Female", "Other", "Prefer not to say"];
-const residenceOptions = ["Urban", "Rural"];
 const educationOptions = ["Undergraduate", "Postgraduate", "Diploma", "Higher secondary", "Other"];
-const institutionOptions = ["Government", "Private", "Aided", "Autonomous", "Other"];
-const sesOptions = ["Lower", "Lower middle", "Middle", "Upper middle", "Upper", "Prefer not to say"];
 
 function makeUserId() {
   if (typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID();
   return `user-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
+function getUserType(age) {
+  return age >= 17 && age <= 27 ? "target_sample" : "non_target_sample";
+}
+
 function getAgeGroup(age) {
-  if (age <= 21) return "18-21";
+  if (age < 17 || age > 27) return "non-target";
+  if (age <= 21) return "17-21";
   if (age <= 24) return "22-24";
   return "25-27";
 }
@@ -48,16 +51,14 @@ export default function OnboardingPage() {
     participantName: "",
     ageYears: "",
     gender: "",
-    residenceArea: "",
     educationLevel: "",
-    institutionType: "",
-    socioeconomicStatus: "",
     primaryLanguage: "",
     city: "",
     state: "",
     country: "India",
     additionalNotes: ""
   });
+  const [continueAnonymously, setContinueAnonymously] = useState(false);
   const [avatarId, setAvatarId] = useState(avatars[0].id);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -69,12 +70,9 @@ export default function OnboardingPage() {
 
   const ageNumber = Number(form.ageYears);
   const canStart =
-    form.participantName.trim().length > 1 &&
     Number.isInteger(ageNumber) &&
-    ageNumber >= 18 &&
-    ageNumber <= 27 &&
-    form.gender &&
-    form.residenceArea &&
+    ageNumber >= 0 &&
+    ageNumber <= 120 &&
     !loading;
 
   function updateField(name, value) {
@@ -88,7 +86,7 @@ export default function OnboardingPage() {
 
   async function beginJourney() {
     if (!canStart) {
-      setError("Please enter name, age between 18 and 27, gender, and residence area.");
+      setError("Please enter a valid age. Name, gender, and education can be skipped.");
       return;
     }
 
@@ -96,14 +94,15 @@ export default function OnboardingPage() {
     setError("");
 
     const anonymousUserId = sessionStorage.getItem("anonymousUserId") || makeUserId();
+    const enteredName = continueAnonymously ? "" : form.participantName.trim();
+    const participantName = enteredName || "Anonymous";
+    const isAnonymous = !enteredName;
+    const userType = getUserType(ageNumber);
     const demographics = {
-      participantName: form.participantName.trim(),
+      participantName,
       ageYears: ageNumber,
-      gender: form.gender,
-      residenceArea: form.residenceArea,
+      gender: cleanOptional(form.gender),
       educationLevel: cleanOptional(form.educationLevel),
-      institutionType: cleanOptional(form.institutionType),
-      socioeconomicStatus: cleanOptional(form.socioeconomicStatus),
       primaryLanguage: cleanOptional(form.primaryLanguage),
       city: cleanOptional(form.city),
       state: cleanOptional(form.state),
@@ -112,10 +111,15 @@ export default function OnboardingPage() {
     };
 
     try {
-      const response = await fetch("/api/session", {
+      const response = await fetch("/api/session/start", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          name: enteredName,
+          age: ageNumber,
+          gender: cleanOptional(form.gender),
+          education: cleanOptional(form.educationLevel),
+          is_anonymous: isAnonymous,
           anonymousUserId,
           ageGroup: getAgeGroup(ageNumber),
           avatarId,
@@ -129,16 +133,46 @@ export default function OnboardingPage() {
       sessionStorage.setItem("anonymousUserId", data.anonymousUserId);
       sessionStorage.setItem("userId", data.anonymousUserId);
       sessionStorage.setItem("sessionId", data.sessionId);
+      sessionStorage.setItem("participant_id", data.participant_id);
+      sessionStorage.setItem("participant_name", data.participant_name);
+      sessionStorage.setItem("is_anonymous", String(data.is_anonymous));
+      sessionStorage.setItem("age", String(data.age ?? ageNumber));
+      sessionStorage.setItem("userType", data.userType ?? userType);
       sessionStorage.setItem("scenarioOrder", JSON.stringify(data.scenarioOrder ?? []));
-      sessionStorage.setItem("playerName", form.participantName.trim());
+      sessionStorage.setItem("playerName", data.participant_name ?? participantName);
       sessionStorage.setItem("playerAvatar", selectedAvatar.label);
       localStorage.setItem("ei.assessment.anonymousUserId", data.anonymousUserId);
       localStorage.setItem("ei.assessment.sessionId", data.sessionId);
+      localStorage.setItem("ei.assessment.participant_id", data.participant_id);
+      localStorage.setItem("ei.assessment.participant_name", data.participant_name ?? participantName);
+      localStorage.setItem("ei.assessment.is_anonymous", String(data.is_anonymous ?? isAnonymous));
+      localStorage.setItem("ei.assessment.age", String(data.age ?? ageNumber));
+      localStorage.setItem("ei.assessment.userType", data.userType ?? userType);
       localStorage.setItem("ei.assessment.scenarioOrder", JSON.stringify(data.scenarioOrder ?? []));
       router.push(`/assessment/${data.scenarioOrder?.[0] ?? "level-01"}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not start session");
-      setLoading(false);
+      const localParticipantId = makeUserId();
+      const localOrder = scenarios.map((scenario) => scenario.levelId);
+      sessionStorage.setItem("anonymousUserId", anonymousUserId);
+      sessionStorage.setItem("userId", anonymousUserId);
+      sessionStorage.setItem("sessionId", localParticipantId);
+      sessionStorage.setItem("participant_id", localParticipantId);
+      sessionStorage.setItem("participant_name", participantName);
+      sessionStorage.setItem("is_anonymous", String(isAnonymous));
+      sessionStorage.setItem("age", String(ageNumber));
+      sessionStorage.setItem("userType", userType);
+      sessionStorage.setItem("scenarioOrder", JSON.stringify(localOrder));
+      sessionStorage.setItem("playerName", participantName);
+      localStorage.setItem("ei.assessment.anonymousUserId", anonymousUserId);
+      localStorage.setItem("ei.assessment.sessionId", localParticipantId);
+      localStorage.setItem("ei.assessment.participant_id", localParticipantId);
+      localStorage.setItem("ei.assessment.participant_name", participantName);
+      localStorage.setItem("ei.assessment.is_anonymous", String(isAnonymous));
+      localStorage.setItem("ei.assessment.age", String(ageNumber));
+      localStorage.setItem("ei.assessment.userType", userType);
+      localStorage.setItem("ei.assessment.scenarioOrder", JSON.stringify(localOrder));
+      setError(err instanceof Error ? `Using local mode: ${err.message}` : "Using local mode.");
+      router.push(`/assessment/${localOrder[0] ?? "level-01"}`);
     }
   }
 
@@ -154,10 +188,10 @@ export default function OnboardingPage() {
             Start your EI story profile.
           </h1>
           <p className="mt-5 text-base leading-7 text-purple-100/75">
-            These socio-demographic details help organize the research data. Your story choices remain tied to an anonymous session ID.
+            These details help organize the research data. You can enter your name or continue anonymously; every playthrough still gets a unique participant ID.
           </p>
           <div className="mt-6 rounded-3xl border border-white/10 bg-white/[0.06] p-5 text-sm leading-6 text-white/70">
-            Required: name, age, gender, and residence area. Other fields are useful for analysis and can be skipped if unavailable.
+            Required: age. Optional: name, gender, education, and notes. The validated research interpretation is for ages 17-27, but everyone can complete the journey.
           </div>
         </div>
 
@@ -169,6 +203,7 @@ export default function OnboardingPage() {
                 value={form.participantName}
                 onChange={(event) => updateField("participantName", event.target.value)}
                 placeholder="Participant name"
+                disabled={continueAnonymously}
                 autoFocus
               />
             </Field>
@@ -177,11 +212,11 @@ export default function OnboardingPage() {
               <input
                 className={inputClass}
                 type="number"
-                min="18"
-                max="27"
+                min="0"
+                max="120"
                 value={form.ageYears}
                 onChange={(event) => updateField("ageYears", event.target.value)}
-                placeholder="18-27"
+                placeholder="Enter age"
               />
             </Field>
 
@@ -189,21 +224,6 @@ export default function OnboardingPage() {
               <select className={selectClass} value={form.gender} onChange={(event) => updateField("gender", event.target.value)}>
                 <option value="">Select gender</option>
                 {genderOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </Field>
-
-            <Field label="Residence area">
-              <select
-                className={selectClass}
-                value={form.residenceArea}
-                onChange={(event) => updateField("residenceArea", event.target.value)}
-              >
-                <option value="">Select area</option>
-                {residenceOptions.map((option) => (
                   <option key={option} value={option}>
                     {option}
                   </option>
@@ -219,36 +239,6 @@ export default function OnboardingPage() {
               >
                 <option value="">Select education</option>
                 {educationOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </Field>
-
-            <Field label="Institution type">
-              <select
-                className={selectClass}
-                value={form.institutionType}
-                onChange={(event) => updateField("institutionType", event.target.value)}
-              >
-                <option value="">Select institution</option>
-                {institutionOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </Field>
-
-            <Field label="Socioeconomic status">
-              <select
-                className={selectClass}
-                value={form.socioeconomicStatus}
-                onChange={(event) => updateField("socioeconomicStatus", event.target.value)}
-              >
-                <option value="">Select status</option>
-                {sesOptions.map((option) => (
                   <option key={option} value={option}>
                     {option}
                   </option>
@@ -282,6 +272,21 @@ export default function OnboardingPage() {
               />
             </Field>
           </div>
+
+          <label className="mt-5 flex items-start gap-3 rounded-2xl border border-white/10 bg-black/25 p-4 text-sm text-white/72">
+            <input
+              type="checkbox"
+              className="mt-1 h-4 w-4 accent-pink-400"
+              checked={continueAnonymously}
+              onChange={(event) => setContinueAnonymously(event.target.checked)}
+            />
+            <span>
+              Continue anonymously
+              <span className="mt-1 block text-xs leading-5 text-white/48">
+                Your name will be saved as Anonymous, but your responses will still stay under one unique participant ID.
+              </span>
+            </span>
+          </label>
 
           <div className="mt-6">
             <p className="text-sm font-semibold text-purple-100">Avatar</p>

@@ -34,17 +34,32 @@ const sceneStyles = {
   "final-reflection": { a: "#020617", b: "#6d28d9", c: "#f0abfc", prop: "mirror", place: "REFLECTION" }
 };
 
-function Character({ x = 120, y = 190, accent = "#f9a8d4", lean = 0 }) {
+function Character({ x = 120, y = 190, accent = "#f9a8d4", lean = 0, mood = "reflective" }) {
+  const browTilt = /angry|tense|irritated|defensive|panic|panicked/i.test(mood) ? -6 : 0;
+  const mouth =
+    /calm|gentle|reflective|attentive/i.test(mood)
+      ? "M-8 -34 C-3 -29 5 -29 10 -34"
+      : /hurt|sad|disappointed|anxious|uneasy/i.test(mood)
+        ? "M-10 -30 C-4 -35 4 -35 10 -30"
+        : "M-9 -32 H9";
   return (
     <g className="scene-breathe" transform={`translate(${x} ${y}) skewX(${lean})`}>
-      <circle cx="0" cy="-42" r="20" fill="rgba(255,255,255,0.82)" />
-      <path d="M-29 14 C-22 -18 -12 -28 0 -28 C12 -28 23 -15 31 14 Z" fill="rgba(15,23,42,0.92)" />
+      <ellipse cx="0" cy="-42" rx="23" ry="25" fill="rgba(255,255,255,0.84)" />
+      <path d="M-18 -54 C-9 -71 12 -70 21 -53 C12 -61 -8 -62 -18 -54Z" fill="rgba(15,23,42,0.88)" />
+      <g className="scene-blink">
+        <ellipse cx="-8" cy="-43" rx="2.5" ry="3.5" fill="rgba(15,23,42,0.85)" />
+        <ellipse cx="9" cy="-43" rx="2.5" ry="3.5" fill="rgba(15,23,42,0.85)" />
+      </g>
+      <path d="M-15 -50 H-4 M5 -50 H16" stroke="rgba(15,23,42,0.72)" strokeWidth="2" strokeLinecap="round" transform={`rotate(${browTilt})`} />
+      <path d={mouth} fill="none" stroke="rgba(15,23,42,0.72)" strokeWidth="2" strokeLinecap="round" />
+      <path d="M-31 14 C-24 -18 -12 -30 0 -30 C13 -30 25 -16 33 14 Z" fill="rgba(15,23,42,0.92)" />
+      <path d="M-18 -16 C-8 -8 8 -8 19 -16" fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="5" strokeLinecap="round" />
       <path d="M-25 19 C-13 34 14 35 27 19" fill="none" stroke={accent} strokeWidth="7" strokeLinecap="round" />
     </g>
   );
 }
 
-function SceneProp({ type, color }) {
+function SceneProp({ type, color, mood }) {
   if (type === "phone" || type === "message" || type === "feed") {
     return (
       <g className="scene-float" transform="translate(250 78)">
@@ -80,8 +95,8 @@ function SceneProp({ type, color }) {
   if (type === "crowd" || type === "two" || type === "split") {
     return (
       <g>
-        <Character x={240} y={215} accent={color} lean={-5} />
-        <Character x={325} y={218} accent="rgba(255,255,255,0.72)" lean={5} />
+        <Character x={240} y={215} accent={color} lean={-5} mood={mood} />
+        <Character x={325} y={218} accent="rgba(255,255,255,0.72)" lean={5} mood={mood} />
         <path className="scene-pulse" d="M282 72 C260 98 260 126 283 151 C310 123 310 96 282 72Z" fill={color} opacity="0.34" />
       </g>
     );
@@ -137,8 +152,8 @@ export default function ScenarioScene({ visualType = "final-reflection", title, 
             style={{ animationDelay: particle.delay }}
           />
         ))}
-        <SceneProp type={style.prop} color={style.c} />
-        <Character x={118} y={230} accent={style.c} />
+        <SceneProp type={style.prop} color={style.c} mood={mood} />
+        <Character x={118} y={230} accent={style.c} mood={mood} />
         <path className="scene-drift" d="M84 93 C111 55 151 58 173 95 C144 113 112 114 84 93Z" fill={style.c} opacity="0.22" />
         <path className="scene-drift slow" d="M410 212 C433 184 462 187 480 214 C455 227 432 229 410 212Z" fill="white" opacity="0.16" />
       </svg>
@@ -182,14 +197,16 @@ export default function ScenarioScene({ visualType = "final-reflection", title, 
         .scene-drift { animation: drift 7s ease-in-out infinite; }
         .scene-drift.slow { animation-duration: 9s; }
         .scene-particle { opacity: 0.42; animation: particle 5.8s ease-in-out infinite; }
+        .scene-blink { animation: blink 5.6s ease-in-out infinite; transform-origin: center; }
         @keyframes sceneShift { from { filter: saturate(1); transform: scale(1); } to { filter: saturate(1.22); transform: scale(1.035); } }
         @keyframes float { 0%, 100% { transform: translate(250px, 78px); } 50% { transform: translate(250px, 66px); } }
         @keyframes breathe { 0%, 100% { opacity: 0.94; } 50% { opacity: 0.72; } }
         @keyframes pulse { 0%, 100% { opacity: 0.35; transform: scale(1); } 50% { opacity: 0.68; transform: scale(1.06); } }
         @keyframes drift { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(16px); } }
         @keyframes particle { 0%, 100% { transform: translateY(0); opacity: 0.22; } 50% { transform: translateY(-18px); opacity: 0.64; } }
+        @keyframes blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.08); } }
         @media (prefers-reduced-motion: reduce) {
-          .scene-gradient, .scene-float, .scene-breathe, .scene-pulse, .scene-drift, .scene-particle {
+          .scene-gradient, .scene-float, .scene-breathe, .scene-pulse, .scene-drift, .scene-particle, .scene-blink {
             animation: none;
           }
         }

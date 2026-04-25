@@ -22,12 +22,16 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({
+      participant_id: rec.participant_id,
       sessionId: rec.sessionId,
       levelId: rec.levelId,
+      chapter: rec.chapter,
       scenarioTitle: rec.scenarioTitle,
       branch: rec.branch ?? rec.branchPrimary,
       selectedOptionId: rec.selectedOptionId,
       selectedOptionText: rec.selectedOptionText,
+      selectedOptionDescription: rec.selectedOptionDescription,
+      adaptiveLevel: rec.adaptiveLevel,
       score: rec.score ?? rec.itemScore,
       branchScore: rec.branchScore,
       responseTimeMs: rec.responseTimeMs ?? rec.latencyMs,
@@ -55,6 +59,13 @@ export async function GET(req: Request) {
   return NextResponse.json({
     session: {
       sessionId: session.sessionId,
+      participant_id: session.participant_id,
+      participant_name: session.participant_name,
+      is_anonymous: session.is_anonymous,
+      age: session.age,
+      gender: session.gender,
+      education: session.education,
+      userType: session.userType,
       startedAt: session.startedAt ?? session.createdAt,
       lastUpdatedAt: session.lastUpdatedAt ?? session.completedAt ?? session.createdAt,
       completedLevels: session.completedLevels ?? responses.map((response: any) => response.levelId),
@@ -76,11 +87,15 @@ export async function GET(req: Request) {
     },
     responses: responses.map((response: any) => ({
       sessionId: response.sessionId,
+      participant_id: response.participant_id,
       levelId: response.levelId,
+      chapter: response.chapter,
       scenarioTitle: response.scenarioTitle,
       branch: response.branch ?? response.branchPrimary,
       selectedOptionId: response.selectedOptionId,
       selectedOptionText: response.selectedOptionText,
+      selectedOptionDescription: response.selectedOptionDescription,
+      adaptiveLevel: response.adaptiveLevel,
       score: response.score ?? response.itemScore,
       branchScore: response.branchScore,
       responseTimeMs: response.responseTimeMs ?? response.latencyMs,
