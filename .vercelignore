@@ -1,0 +1,7 @@
+.env.local
+.next
+node_modules
+.npm-cache
+.next-dev.*.log
+Microsoft
+~$all_responses.xlsx

@@ -6,5 +6,6 @@ npm-cache
 .npm-cache
 .next-dev.*.log
 Microsoft/
+*.bak
 
 .vercel

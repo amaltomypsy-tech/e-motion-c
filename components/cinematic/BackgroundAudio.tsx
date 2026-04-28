@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { resolveAudioPath } from "@/lib/audioPath";
 
 export function BackgroundAudio({ src, enabled }: { src?: string; enabled: boolean }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (!src) return;
-    if (!audioRef.current) audioRef.current = new Audio(src);
+    if (!audioRef.current) audioRef.current = new Audio(resolveAudioPath(src));
     const audio = audioRef.current;
     audio.loop = true;
     audio.volume = 0.25;

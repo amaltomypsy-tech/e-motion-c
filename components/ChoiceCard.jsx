@@ -1,8 +1,11 @@
 "use client";
 
 export default function ChoiceCard({ option, index, selected, disabled, onSelect }) {
-  const title = option.label || `Choice ${String.fromCharCode(65 + index)}`;
-  const body = option.description || option.text;
+  const letter = String.fromCharCode(65 + index);
+  const title = option.label || "";
+  const body = option.description || option.text || "";
+  const showTitle = title && title.trim() !== body.trim();
+  const displayText = body || title || `Choice ${letter}`;
 
   return (
     <button
@@ -26,11 +29,15 @@ export default function ChoiceCard({ option, index, selected, disabled, onSelect
             selected ? "bg-cyan-100 text-slate-950" : "bg-white/12 text-white"
           ].join(" ")}
         >
-          {String.fromCharCode(65 + index)}
+          {letter}
         </span>
         <span className="min-w-0">
-          <span className="block text-sm font-black uppercase tracking-[0.08em] text-white/90">{title}</span>
-          <span className="mt-2 block text-sm leading-6 text-slate-100/72">{body}</span>
+          {showTitle ? (
+            <span className="block text-sm font-black uppercase tracking-[0.08em] text-white/90">{title}</span>
+          ) : null}
+          <span className={[showTitle ? "mt-2 " : "", "block text-sm leading-6 text-slate-100/82"].join("")}>
+            {displayText}
+          </span>
         </span>
       </span>
     </button>

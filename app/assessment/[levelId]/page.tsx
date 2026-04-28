@@ -15,6 +15,43 @@ function optionOrder(scenario: ScenarioLevel) {
   return scenario.display_order ?? scenario.displayed_option_order ?? scenario.options.map((option: any) => option.optionId ?? option.id);
 }
 
+function playSceneChangeSound() {
+  if (typeof window === "undefined") return;
+  const AudioContextCtor = window.AudioContext ?? (window as any).webkitAudioContext;
+  if (!AudioContextCtor) return;
+
+  try {
+    const audioContext = new AudioContextCtor();
+    const master = audioContext.createGain();
+    const shimmer = audioContext.createOscillator();
+    const lowPulse = audioContext.createOscillator();
+    const now = audioContext.currentTime;
+
+    master.gain.setValueAtTime(0.0001, now);
+    master.gain.exponentialRampToValueAtTime(0.055, now + 0.025);
+    master.gain.exponentialRampToValueAtTime(0.0001, now + 0.34);
+    master.connect(audioContext.destination);
+
+    shimmer.type = "sine";
+    shimmer.frequency.setValueAtTime(620, now);
+    shimmer.frequency.exponentialRampToValueAtTime(880, now + 0.18);
+    shimmer.connect(master);
+
+    lowPulse.type = "triangle";
+    lowPulse.frequency.setValueAtTime(164, now);
+    lowPulse.frequency.exponentialRampToValueAtTime(220, now + 0.22);
+    lowPulse.connect(master);
+
+    shimmer.start(now);
+    lowPulse.start(now + 0.03);
+    shimmer.stop(now + 0.36);
+    lowPulse.stop(now + 0.3);
+    window.setTimeout(() => audioContext.close().catch(() => undefined), 500);
+  } catch {
+    // Audio can be blocked by browser policy; navigation should continue silently.
+  }
+}
+
 function saveLocalResponse(scenario: ScenarioLevel, selected: any, selectedOptionId: string, sessionId: string) {
   if (typeof window === "undefined") return;
   const key = `ei.assessment.responses.${sessionId}`;
@@ -126,6 +163,7 @@ export default function AssessmentLevelPage() {
 
     setSubmitting(true);
     setError("");
+    playSceneChangeSound();
     const selected = scenario.options.find((option: any) => (option.optionId ?? option.id) === selectedOptionId);
     const displayedOptionOrder = optionOrder(scenario);
     saveLocalResponse(scenario, selected, selectedOptionId, sessionId);

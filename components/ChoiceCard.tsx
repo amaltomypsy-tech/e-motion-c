@@ -34,8 +34,11 @@ export default function ChoiceCard({
   const current = option ?? { label, description };
   const active = selected ?? Boolean(isSelected);
   const locked = disabled ?? Boolean(isDisabled);
-  const title = current.label || `Choice ${String.fromCharCode(65 + index)}`;
+  const letter = String.fromCharCode(65 + index);
+  const title = current.label || "";
   const body = current.description || current.text || "";
+  const showTitle = title && title.trim() !== body.trim();
+  const displayText = body || title || `Choice ${letter}`;
 
   return (
     <button
@@ -59,11 +62,15 @@ export default function ChoiceCard({
             active ? "bg-cyan-100 text-slate-950" : "bg-white/12 text-white"
           ].join(" ")}
         >
-          {String.fromCharCode(65 + index)}
+          {letter}
         </span>
         <span className="min-w-0">
-          <span className="block text-sm font-black uppercase tracking-[0.08em] text-white/90">{title}</span>
-          <span className="mt-2 block text-sm leading-6 text-slate-100/72">{body}</span>
+          {showTitle ? (
+            <span className="block text-sm font-black uppercase tracking-[0.08em] text-white/90">{title}</span>
+          ) : null}
+          <span className={[showTitle ? "mt-2 " : "", "block text-sm leading-6 text-slate-100/82"].join("")}>
+            {displayText}
+          </span>
         </span>
       </span>
     </button>
